@@ -4,7 +4,7 @@
     <head>
         <title>WebSocket with Bun and JavaScript</title>
         <script>
-            let echo_service;
+            let chat_service;
             append = function (text) {
                 document
                 .getElementById("websocket_events")
@@ -12,24 +12,24 @@
                     "<li>" + text + ";</li>");
             };
             window.onload = function () {
-                echo_service = new WebSocket("ws://127.0.0.1:8080/chat");
-                echo_service.onmessage = function (event) {
+                chat_service = new WebSocket("ws://127.0.0.1:8080/chat");
+                chat_service.onmessage = function (event) {
                     append(event.data);
                 };
-                echo_service.onopen = function () {
+                chat_service.onopen = function () {
                     append("🚀 Connected to WebSocket!");
                 };
-                echo_service.onclose = function () {
+                chat_service.onclose = function () {
                     append("Connection closed");
                 };
-                echo_service.onerror = function () {
+                chat_service.onerror = function () {
                     append("Error happens");
                 };
             };
 
             function sendMessage() {
                 let message = document.getElementById("message").value;
-                echo_service.send(message);
+                chat_service.send(message);
             }
         </script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
