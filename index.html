@@ -1,0 +1,57 @@
+<!doctype html>
+
+<html>
+    <head>
+        <title>WebSocket with Bun and JavaScript</title>
+        <script>
+            let echo_service;
+            append = function (text) {
+                document
+                .getElementById("websocket_events")
+                .insertAdjacentHTML("beforeend",
+                    "<li>" + text + ";</li>");
+            };
+            window.onload = function () {
+                echo_service = new WebSocket("ws://127.0.0.1:8080/chat");
+                echo_service.onmessage = function (event) {
+                    append(event.data);
+                };
+                echo_service.onopen = function () {
+                    append("🚀 Connected to WebSocket!");
+                };
+                echo_service.onclose = function () {
+                    append("Connection closed");
+                };
+                echo_service.onerror = function () {
+                    append("Error happens");
+                };
+            };
+
+            function sendMessage() {
+                let message = document.getElementById("message").value;
+                echo_service.send(message);
+            }
+        </script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    </head>
+    <body>
+        <main class="container">
+            Message: <input value="Hello!" type="text" id="message" />
+            <input
+                type="button"
+                value="Submit"
+                id="btn"
+            />
+            <br />
+            <ul id="websocket_events"></ul>
+        </main>
+        <script>
+            let msg = document.querySelector('input#message');
+            let btn = document.querySelector('input#btn');
+            btn.addEventListener("click", function (event) {
+                sendMessage(event);
+                msg.value = '';
+            })
+        </script>
+    </body>
+</html>
