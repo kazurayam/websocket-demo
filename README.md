@@ -6,7 +6,7 @@ I will transcript the articles by ROBERTO BUTTI in Dec 2024:
 2. [WebSocket Client with JavaScript](https://dev.to/robertobutti/websocket-client-with-javascript-54ec)
 3. [WebSocket broadcasting with JavaScript and Bun](https://dev.to/robertobutti/websocket-broadcasting-with-javascript-and-bun-3mkf)
 
-## How to run the demo
+## How to run the demo of "WebSocket Client with JavaScript"
 
 Start the server:
 
