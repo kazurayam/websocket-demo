@@ -17,5 +17,12 @@ $ bun index.ts
 
 You want to open a browser and navigate to `localhost:8080`.
 
+![index.ts initial](https://kazurayam.github.io/websocket-demo/images/001_index.ts_initial.png)
+
+Now you are ready to type a message and submit it.
+
+The following screenshot shows how it looks like after a few times of message exchanges.
+
+![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/002_index.ts_exchanged.png)
 
 
