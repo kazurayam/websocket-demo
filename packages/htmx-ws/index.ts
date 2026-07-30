@@ -16,11 +16,15 @@ const server = Bun.serve({
     websocket: {
         open(ws) {
             console.log("👋 A new Websocket Connection");
-            ws.send("👋 Welcome baby");
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                '<li>👋 Welcome baby</li>' + "</div>");
         },
-        message(ws, message) {
-            console.log("✉️ A new Websocket Message is received: " + message);
-            ws.send("✉️ Server received a message from you:  " + message);
+        message(ws, data) {
+            let d = JSON.parse(data.toString())
+            console.log("✉️ A new Websocket Message is received: " + d.message);
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>✉️ Server received a message from you: ${d.message}</li>` +
+                "</div>");
         },
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");

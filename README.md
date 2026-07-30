@@ -8,10 +8,23 @@ I will transcript the articles by ROBERTO BUTTI in Dec 2024:
 
 ## How to run the demo of "WebSocket Client with JavaScript"
 
+### Set ROOT
+
+```
+$ cd ~/github/websocket-demo
+$ ROOT=`pwd`
+
+### Demonstrating the echo service by Vanilla Javascript
+
+```
+$ cd $ROOT/vanilla-javascript
+$ VANILLA=`pwd`
+```
+
 Start the server:
 
 ```
-$ cd $ROOT
+$ cd $VANILLA
 $ bun index.ts
 ```
 
@@ -24,5 +37,7 @@ Now you are ready to type a message and submit it.
 The following screenshot shows how it looks like after a few times of message exchanges.
 
 ![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/002_index.ts_exchanged.png)
+
+### Demonstrating the broadcasting service by Vanilla Javascript
 
 
