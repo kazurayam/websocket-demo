@@ -69,30 +69,9 @@ The 2 implementation codes are quite different. If you read the 2 codes, compare
 
 | Vanilla JavaScript | | Htmx WebSocket extension |
 | ----- |--- |  ----- |
-| [index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts) | <=> |[index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts) |
 | [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html) | <=> | [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html) |
+| [index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts) | <=> |[index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts) |
 
-#### Diff of index.ts
-
-```
-$ diff packages/vanilla-javascript/index.ts packages/htmx-ws/index.ts
-19c19,20
-<             ws.send("👋 Welcome baby");
----
->             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
->                 '<li>👋 Welcome baby</li>' + "</div>");
-21,23c22,27
-<         message(ws, message) {
-<             console.log("✉️ A new Websocket Message is received: " + message);
-<             ws.send("✉️ Server received a message from you: " + message);
----
->         message(ws, data) {
->             let d = JSON.parse(data.toString())
->             console.log("✉️ A new Websocket Message is received: " + d.message);
->             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
->                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
->                 "</div>");
-```
 
 #### Diff of index.html
 
@@ -160,6 +139,25 @@ $ diff packages/vanilla-javascript/index.html packages/htmx-ws/index.html
 <         </script>
 ```
 
-#### Interpretation
+#### Diff of index.ts
 
--
+```
+$ diff packages/vanilla-javascript/index.ts packages/htmx-ws/index.ts
+19c19,20
+<             ws.send("👋 Welcome baby");
+---
+>             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 '<li>👋 Welcome baby</li>' + "</div>");
+21,23c22,27
+<         message(ws, message) {
+<             console.log("✉️ A new Websocket Message is received: " + message);
+<             ws.send("✉️ Server received a message from you: " + message);
+---
+>         message(ws, data) {
+>             let d = JSON.parse(data.toString())
+>             console.log("✉️ A new Websocket Message is received: " + d.message);
+>             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
+>                 "</div>");
+```
+
