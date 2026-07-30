@@ -53,23 +53,24 @@ $ bun ./index.ts
 
 You want to open a browser and navigate to `localhost:8080`.
 
-![htmx index.ts initial](https://kazurayam.github.io/websocket-demo/images/021_index.ts_initial.png)
+![htmx index.ts initial](https://kazurayam.github.io/websocket-demo/images/011_index.ts_initial.png)
 
 Now you are ready to type a message and submit it.
 
 The following screenshot shows how it looks like after a few times of message exchanges.
 
-![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/022_index.ts_exchanged.png)
+![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/012_index.ts_exchanged.png)
 
 As you see, the "htmx-ws" demonstration presents almost the same Web page view.
 
 ### Comparing the 2 implementation
 
-The 2 implementation codes are quite different. If you read the 2 codes, compare in detail, you will understand how the htmx websocket extension.
+The 2 implementation codes are quite different. If you read the 2 codes, compare in detail, you will understand the htmx websocket extension --- how it works, how you should use it.
 
-| Vanilla JavaScript implementation | Htmx + WebSocket extension |
-| [index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts) | [index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts) |
-| [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html) | [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html) |
+| Vanilla JavaScript | | Htmx WebSocket extension |
+| ----- |--- |  ----- |
+| [index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts) | <=> |[index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts) |
+| [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html) | <=> | [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html) |
 
 #### Diff of index.ts
 
