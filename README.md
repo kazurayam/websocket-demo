@@ -125,7 +125,7 @@ $ diff packages/vanilla-javascript/index.html packages/htmx-ws/index.html
 >             <div hx-ext="ws" ws-connect="/chat">
 >                 <form id="form" ws-send>
 >                     Message: <input type="text" name="message" value="Hello!" />
->                     <input type="submit" value="Submit" id="btn" />
+>                     <input type="submit" value="Submit" />
 >                 </form>
 >             </div>c
 48,55d24
@@ -160,4 +160,42 @@ $ diff packages/vanilla-javascript/index.ts packages/htmx-ws/index.ts
 >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
 >                 "</div>");
 ```
+
+
+## Demonstrating the Broadcast service by Vanilla JavaScript
+
+```
+$ bun ./broadcast.ts
+🤗 Hello via Bun! 🐰
+🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+...
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+👋 A new Websocket Connection
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+...
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+👋 A new Websocket Connection
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+...
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+✉️ A new Websocket Message is received: ça va
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+...
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+✉️ A new Websocket Message is received: こんにちは
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+...
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+⏹️ A Websocket Connection is CLOSED
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+...
+Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+^C
+```
+
+## Demonstrating the Broadcast service using Htmx WebSocket Extension
+
 

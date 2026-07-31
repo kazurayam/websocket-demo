@@ -48,3 +48,4 @@ setInterval(() => {
     server.publish("the-group-chat", msg);
     console.log(`Message sent to "the-group-chat": ${msg}`);
 }, 5000); // 5000 ms = 5 seconds
+

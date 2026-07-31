@@ -16,23 +16,32 @@ const server = Bun.serve({
         return new Response("404!");
     },
     websocket: {
-        message(ws, message) {
-            console.log("✉️ A new Websocket Message is received: " + message);
-            ws.send("✉️ I received a message from you:  " + message);
-            ws.publish(
-                "the-group-chat",
-                `📢 Message from ${ws.remoteAddress}: ${message}`,
-            );
-        }, // a message is received
         open(ws) {
             console.log("👋 A new Websocket Connection");
             ws.subscribe("the-group-chat");
-            ws.send("👋 Welcome baby");
-            ws.publish("the-group-chat", "🥳 A new friend is joining the Party");
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                '<li>👋 Welcome baby</li>' + "</div>");
+            ws.publish("the-group-chat",
+                '<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>🥳 A new friend is joining the Party</li>` +
+                "</div>");
         }, // a socket is opened
+        message(ws, message) {
+            console.log("✉️ A new Websocket Message is received: " + message);
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                '<li>👋 Welcome baby</li>' + "</div>");
+            ws.publish(
+                "the-group-chat",
+                '<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>📢 Message from ${ws.remoteAddress}: ${message}</li>` +
+                "</div>"
+            );
+        }, // a message is received
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");
-            const msg = `A Friend has left the chat`;
+            const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>A Friend has left the chat</li>` +
+                "</div>";
             ws.unsubscribe("the-group-chat");
             ws.publish("the-group-chat", msg);
         }, // a socket is closed
@@ -48,3 +57,4 @@ setInterval(() => {
     server.publish("the-group-chat", msg);
     console.log(`Message sent to "the-group-chat": ${msg}`);
 }, 5000); // 5000 ms = 5 seconds
+
