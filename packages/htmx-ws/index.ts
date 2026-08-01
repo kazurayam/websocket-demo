@@ -1,4 +1,5 @@
 console.log("🤗 Hello via Bun! 🐰");
+const serverName = "htmx-ws/index.ts"
 const server = Bun.serve({
     port: 8080,
     fetch(req, server) {
@@ -17,6 +18,7 @@ const server = Bun.serve({
         open(ws) {
             console.log("👋 A new Websocket Connection");
             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>serverName: ${serverName}</li>` +
                 '<li>👋 Welcome baby</li>' + "</div>");
         },
         message(ws, data) {

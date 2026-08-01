@@ -1,4 +1,5 @@
 console.log("🤗 Hello via Bun! 🐰");
+const serverName = "vanilla-javascript/broadcast.ts"
 const server = Bun.serve({
     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
     fetch(req, server) {
@@ -27,6 +28,7 @@ const server = Bun.serve({
         open(ws) {
             console.log("👋 A new Websocket Connection");
             ws.subscribe("the-group-chat");
+            ws.send(`serverName: ${serverName}`);
             ws.send("👋 Welcome baby");
             ws.publish("the-group-chat", "🥳 A new friend is joining the Party");
         }, // a socket is opened

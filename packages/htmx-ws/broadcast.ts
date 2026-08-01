@@ -1,4 +1,5 @@
 console.log("🤗 Hello via Bun! 🐰");
+const serverName = "htmx-ws/broadcast.ts"
 const server = Bun.serve({
     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
     fetch(req, server) {
@@ -20,6 +21,7 @@ const server = Bun.serve({
             console.log("👋 A new Websocket Connection");
             ws.subscribe("the-group-chat");
             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>serverName: ${serverName}</li>` +
                 '<li>👋 Welcome baby</li>' + "</div>");
             ws.publish("the-group-chat",
                 '<div hx-swap-oob="beforeend:#websocket_events">' +
