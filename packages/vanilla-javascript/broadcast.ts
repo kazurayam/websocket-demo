@@ -1,5 +1,5 @@
 console.log("🤗 Hello via Bun! 🐰");
-const serverName = "vanilla-javascript/broadcast.ts"
+const topic = 'the-group-chat';
 const server = Bun.serve({
     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
     fetch(req, server) {
@@ -21,22 +21,23 @@ const server = Bun.serve({
             console.log("✉️ A new Websocket Message is received: " + message);
             ws.send("✉️ I received a message from you:  " + message);
             ws.publish(
-                "the-group-chat",
+                topic,
                 `📢 Message from ${ws.remoteAddress}: ${message}`,
             );
         }, // a message is received
         open(ws) {
             console.log("👋 A new Websocket Connection");
-            ws.subscribe("the-group-chat");
+            ws.subscribe(topic);
+            const serverName = "vanilla-javascript/broadcast.ts"
             ws.send(`serverName: ${serverName}`);
             ws.send("👋 Welcome baby");
-            ws.publish("the-group-chat", "🥳 A new friend is joining the Party");
+            ws.publish(topic, "🥳 A new friend is joining the Party");
         }, // a socket is opened
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");
             const msg = `A Friend has left the chat`;
-            ws.unsubscribe("the-group-chat");
-            ws.publish("the-group-chat", msg);
+            ws.unsubscribe(topic);
+            ws.publish(topic, msg);
         }, // a socket is closed
         drain(ws) {
             console.log("DRAIN EVENT");
@@ -47,7 +48,7 @@ console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`)
 
 setInterval(() => {
     const msg = "Hello from the Server, this is a periodic message!";
-    server.publish("the-group-chat", msg);
-    console.log(`Message sent to "the-group-chat": ${msg}`);
+    server.publish(topic, msg);
+    console.log(`Message sent to "${topic}": ${msg}`);
 }, 5000); // 5000 ms = 5 seconds
 
