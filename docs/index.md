@@ -69,6 +69,8 @@ AIによる要約:
 
 ### Vanilla JavaScriptによる実装のコード
 
+#### vanilla-javascript/index.ts
+
     // packages/vanilla-javascript/index.ts
 
     console.log("🤗 Hello via Bun! 🐰");
@@ -106,6 +108,8 @@ AIによる要約:
         }
     });
     console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
+
+#### vanilla-javascript/index.html
 
     <!-- packages/vanilla-javascript/index.html -->
     <!doctype html>
@@ -165,6 +169,8 @@ AIによる要約:
         </body>
     </html>
 
+#### vanilla-javascript/broadcast.ts
+
     // packages/vanilla-javascript/broadcast.ts
 
     console.log("🤗 Hello via Bun! 🐰");
@@ -223,7 +229,7 @@ AIによる要約:
 
 ### Vanilla JavaScriptによる実装を動かしてみる
 
-サーバーを起動するには、まず `$ROOT/packages/vanilla-javascript` ディレクトリに移動する。そして `bun ./index.ts` を実行する。ちなみにサーバーを停止するにはコマンドラインでCTRL+Cをキー入力してプロセスをkillする。
+サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
 
     $ cd $ROOT/packages/vanilla-javascript
     $ bun ./index.ts
@@ -231,7 +237,7 @@ AIによる要約:
     🤗 Hello via Bun! 🐰
     🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
 
-サーバーが起動したら、次にブラウザを開き URL `localhost:8080` を開く。
+サーバーが起動したら、次にブラウザを開き URL `localhost:8080` を開く。するとこんな初期画面が表示される。
 
 ![index.ts initial](https://kazurayam.github.io/websocket-demo/images/001_index.ts_initial.png)
 
@@ -239,11 +245,25 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 ![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/002_index.ts_exchanged.png)
 
-`./index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが表示される。しかし、片方のブラウザでメッセージを送信しても、もう片方のブラウザにはそのメッセージは表示されません。
+`./index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、片方のブラウザでメッセージを送信しても、もう片方のブラウザにはそのメッセージは表示されません。
 
 ![dual browser echo local](https://kazurayam.github.io/websocket-demo/images/003_dual_browser_echo_local.png)
 
-## Htmx WebSocket Extensionによる実装
+コマンドラインでCTRL+Cをキー入力して `./index.ts` によって起動したサーバを停止しましょう。そして今度は `bun ./broadcast.ts` を実行しよう。
+
+    $ cd $ROOT/packages/vanilla-javascript
+    $ bun ./broadcast.ts
+    $ bun ./broadcast.ts
+    🤗 Hello via Bun! 🐰
+    🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
+    Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
+    ...
+
+`` ./broadcast.ts`はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが表示されるだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。また `./broadcast.ts`はサーバーからの定期的なメッセージ( ` `` )をブラウザに送信します。ブラウザを開いたままにしておくと、サーバーからの定期的なメッセージがブラウザに表示されます。
+
+![broadcast](https://kazurayam.github.io/websocket-demo/images/004_broadcast.png)
+
+## Htmx WebSocket Extensionを使った実装
 
 ## Demonstrating the Echo service using htmx websocket Extension
 
