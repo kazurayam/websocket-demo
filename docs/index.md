@@ -259,9 +259,13 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
     Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
     ...
 
-`` ./broadcast.ts`はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが表示されるだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。また `./broadcast.ts`はサーバーからの定期的なメッセージ( ` `` )をブラウザに送信します。ブラウザを開いたままにしておくと、サーバーからの定期的なメッセージがブラウザに表示されます。
+`./broadcast.ts` はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。それだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。
 
 ![broadcast](https://kazurayam.github.io/websocket-demo/images/004_broadcast.png)
+
+また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからの定期的なメッセージ `Hello from the Server, this is a periodic message!` がブラウザに表示されます。HTTPプロトコルがクライアントがrequestしサーバがreplyするの繰り返すのに対して、WebSocketプロトコルはサーバーからクライアントへの単方向通信も可能であることが特徴です。
+
+![mono directional messaging](https://kazurayam.github.io/websocket-demo/images/005_mono_directional_messaging.png)
 
 ## Htmx WebSocket Extensionを使った実装
 
