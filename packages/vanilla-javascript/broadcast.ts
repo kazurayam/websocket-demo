@@ -1,3 +1,5 @@
+// packages/vanilla-javascript/broadcast.ts
+
 console.log("🤗 Hello via Bun! 🐰");
 const topic = 'the-group-chat';
 const server = Bun.serve({

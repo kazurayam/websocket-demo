@@ -37,7 +37,7 @@ const server = Bun.serve({
                 "</div>");
             ws.publish(
                 topic,
-                '<div hx-swap-oob="beforeend:#websocket_events">' +
+                '<div hx-swap-oob="be:qforeend:#websocket_events">' +
                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
                 "</div>"
             );

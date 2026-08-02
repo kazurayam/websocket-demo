@@ -1,0 +1,73 @@
+' https://plantuml.com/ja/sequence-diagram
+
+@startuml sequence
+skinparam sequenceMessageAlign center
+
+actor       管理者             as admin
+actor       テスターX          as testerX
+boundary    ブラウザ           as chrome
+control     "WebSocket client" as wsc
+participant server [
+    =server
+    ----
+    localhost:3000
+]
+control     "WebSocket Hander" as wsh
+
+== 管理者がサーバーを起動する ==
+admin       ->   server     : start server
+server      ->   ws         : create WebSocket server
+activate ws
+hnote over ws: topic:\nanonymous-chat-room
+note left: 1.4 subscribe to the topic 'anonymous-chat-room'
+
+== 2 テスターXがチャット画面を開く ==
+testerX     ->   chrome     : open Chrome
+testerX     ->   chrome     : navigate to http://localhost:8080
+chrome      ->   server     : HTTP Request GET /
+frontend    ->   chrome     : 2.4 HTTP Response (チャット画面)
+chrome      ->   react1     : 2.5 start React App
+activate react1
+react1      ->   server     : 2.6 GET http://localhost:3000/ws
+
+server      ->   ws         : 2.7 upgrade https: to ws:
+react1  o\\--\\o ws         : 2.8 ws://localhost:3000/ws connection is kept open
+note left: 2.9 WebSocket client opened
+react1      ->   ws         : 2.10 subscribe to the topic
+
+== 3 テスターYがチャット画面を開く ==
+testerY     ->   firefox    : 3.1 open Firefox
+testerY     ->   firefox    : 3.2 to http://localhost:5173
+firefox     ->   frontend   : 3.3 HTTP Request GET /
+frontend    ->   firefox    : 3.4 HTTP Response (チャット画面)
+firefox    -->   react2     : 3.5 start React App
+activate react2
+react2      ->   server     : 3.6 GET http://localhost:3000/ws
+server      ->   ws         : 3.7 upgrade http: to ws:
+react2  o\\--\\o ws         : 3.8 ws://localhost:3000/ws connection is kept open
+note left: 3.9 WebSocket client opened
+react2      ->   ws         : 3.10 subscribe to the topic
+
+== 4 テスターXがメッセージを送信する ==
+testerX     ->   chrome     : 4.1 メッセージを入力してSend
+chrome      ->   server     : 4.2 POST /messages
+server      ->   ws         : 4.3 publish a message to the topic
+
+== メッセージがsubscribers(テスターXとテスターY)に配信される ==
+react1  o\\--o   ws         : the message is transfered to the subscribers
+note left
+UPDATE_CHAT: {id:"1785061072097",
+    date:"7/26/2026, 7:17:52 PM"}
+end note
+chrome     <-    react1     : チャット画面が更新される
+testerX    <-    chrome     : 更新されたチャット画面を見る
+
+react2  o\\--o   ws         : the message is transfered to the subscribers
+note left
+UPDATE_CHAT: {id:"1785061072097",
+    date:"7/26/2026, 7:17:52 PM"}
+end note
+firefox    <-    react2         : チャット画面が更新される
+testerY    <-    firefox    : 更新されたチャット画面を見る
+
+@enduml
