@@ -3,29 +3,48 @@
 
 # WebSocketプロトコルで連携するクライアントとサーバのデモ --- BunとHTMXによる
 
-バージョン: unknown
-レポジトリ: <https://github.com/kazurayam/websocket-demo>
+- date: 2026-08-03
+
+- author: kazurayam
+
+- レポジトリ: <https://github.com/kazurayam/websocket-demo>
 
 ## 概要
 
-WebSocketプロトコルで連携するサーバとクライアントを紹介します。サーバはBunの上にTypeScript言語で実装した。クライアントはwebブラウザにHTMLをロードする形で実装した。クライアントを実装するのに二通りの方法を試みた。ひとつは `<script>` タグの中にJavaScriptでコードをゴリゴリ書く素朴なやり方。もう一つは [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) を利用するやり方。同じ動作をする二つのコードを書くことにより、Htmxの使い方をより良く理解することができた。
+WebSocketプロトコルで連携するサーバとクライアントを紹介します。サーバはBunの上にTypeScript言語で実装した。クライアントはwebブラウザにHTMLをロードする形で実装した。クライアントを実装するのに二通りの方法を試みた。ひとつは `<script>` タグの中にJavaScriptでコードをゴリゴリ書く素朴なやり方。もう一つは [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) を利用するやり方。HtmxのWebSocket拡張の使い方を理解することができた。
 
 ## WebSocketとは
 
-AIによる要約と和訳:
+AIによる説明:
 
-&gt;WebSocket is a protocol that enables a persistent, bidirectional communication channel over a single TCP connection, allowing servers to push data to clients without prior requests. The WebSocket API in browsers lets you create and manage a WebSocket connection using the WebSocket() constructor and handle events like open, message, error, and close.
-&gt;WebSocketは、単一のTCP接続上で永続的かつ双方向の通信チャネルを可能にするプロトコルであり、サーバーが事前のリクエストなしにクライアントにデータをプッシュできるようにします。ブラウザのWebSocket APIでは、WebSocket()コンストラクタを使ってWebSocket接続を作成・管理し、開く、メッセージ、エラー、クローズなどのイベントを処理できます。
+> WebSocketは、単一のTCP接続上で永続的かつ双方向の通信チャネルを可能にするプロトコルであり、サーバーが事前のリクエストなしにクライアントにデータをプッシュできるようにします。ブラウザのWebSocket APIでは、WebSocket()コンストラクタを使ってWebSocket接続を作成・管理し、開く、メッセージ、エラー、クローズなどのイベントを処理できます。
+>
+> — 
+> text
 
-- [WikipediaのWebSocketのページ](https://ja.wikipedia.org/wiki/WebSocket)
+参考情報:
 
-- [MDN WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+1.  [WikipediaのWebSocketのページ](https://ja.wikipedia.org/wiki/WebSocket)
 
-- [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/)
+2.  [MDN WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+
+3.  [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/)
 
 ## 環境を構築する
 
-### ルートプロジェクトを作る
+### 所与の環境
+
+- macOS Tahoe 26.5.2
+
+- Bun 1.3.14
+
+- Chrome 150.0.7871.187
+
+- Firefox 153.0.1
+
+- VSCode 1.130.0
+
+### ルート・ディレクトリを作る
 
 自分のマシンで適当なディレクトリを作る。この記事ではそのディレクトリを `ROOT` という記号で呼ぶことにする。下記の操作例ではわたしのMacのホームディレクトリの直下に `websocket-demo` ディレクトリを作った。そしてそのフルパスを一時的なシェル変数 `ROOT` に代入して参照している。
 
@@ -51,7 +70,7 @@ AIによる要約と和訳:
     │   └── vanilla-javascript
     └── README.md
 
-二つのディレクトリそれぞれの下にWebSocketアプリケーションを一つづつ作ろう。 `vanilla-javascript` ディレクトリの中ではブラウザが提供する [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) を素のJavaScriptが直接ドライブする例を実装しよう。 `htmx-ws` ディレクトリの中では [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/)を利用する例を実装しよう。
+二つのディレクトリそれぞれの下にWebSocketアプリケーションを一つづつ作ろうと考えた。 `vanilla-javascript` ディレクトリの中ではブラウザが提供する [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) を素のJavaScriptが直接ドライブする例を実装しよう。 `htmx-ws` ディレクトリの中では [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/)を利用する例を実装しよう。
 
 `bun init` コマンドでbunプロジェクトを初期化した。
 
@@ -60,7 +79,7 @@ AIによる要約と和訳:
     $ cd $ROOT/packages/htmx-ws
     $ bun -init -y
 
-`bun add` コマンドで追加すべき外部パッケージは無い。\`Bun.serve()\`がWebSocket APIを提供するので十分だ。
+`bun add` コマンドで追加すべき外部パッケージは無い。 `Bun.serve()` がWebSocket APIを標準提供する。それで十分だ。
 
 ## Vanilla JavaScriptによる実装
 
@@ -80,7 +99,7 @@ ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanil
 
 - [packages/vanilla-javascript/](https://github.com/kazurayam/websocket-demo/tree/main/packages/vanilla-javascript)
 
-何はともあれそれを動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
+何はともあれ動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
 
     $ cd $ROOT/packages/vanilla-javascript
     $ bun ./index.ts
@@ -95,7 +114,7 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 ![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/002_index.ts_exchanged.png)
 
-`./index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、片方のブラウザでメッセージを送信しても、もう片方のブラウザにはそのメッセージは表示されません。
+`./index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、Firfoxブラウザで「元気ですか」と送信しても、Chromeブラウザには「元気ですか」と表示されません。
 
 ![dual browser echo local](https://kazurayam.github.io/websocket-demo/images/003_dual_browser_echo_local.png)
 
@@ -113,9 +132,11 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 ![broadcast](https://kazurayam.github.io/websocket-demo/images/004_broadcast.png)
 
-また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからの定期的なメッセージ `Hello from the Server, this is a periodic message!` がブラウザに表示されます。HTTPプロトコルの場合クライアントがrequestしサーバがreplyするの繰り返す。それに対して、WebSocketプロトコルはサーバーからクライアントへの単方向通信も可能であることが特徴です。
+また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからメッセージ `Hello from the Server, this is a periodic message!` が繰り返しブラウザに表示されます。
 
 ![mono directional messaging](https://kazurayam.github.io/websocket-demo/images/005_mono_directional_messaging.png)
+
+HTTPプロトコルの場合クライアントがrequestしサーバがreplyするの繰り返す。それに対して、WebSocketプロトコルはサーバーからクライアントへの単方向通信も可能であることが特徴です。
 
 ### Vanilla JavaScriptによる実装のコード
 
