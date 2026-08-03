@@ -139,7 +139,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 では、Vanilla JavaScriptによる実装のコードを紹介します。
 
-#### [vanila-javascript/index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html)
+#### [vanila-javascript/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts)
 
     // packages/vanilla-javascript/index.ts
     console.log("🤗 Hello via Bun! 🐰");
@@ -179,7 +179,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     });
     console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
 
-#### [vanilla-javascript/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts)
+#### [vanilla-javascript/index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html)
 
     <!-- packages/vanilla-javascript/index.html -->
     <!doctype html>

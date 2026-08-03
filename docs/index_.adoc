@@ -150,14 +150,14 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 では、Vanilla JavaScriptによる実装のコードを紹介します。
 
-==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html[vanila-javascript/index.html]
+==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts[vanila-javascript/index.ts]
 
 [source,typescript]
 ----
 include::../packages/vanilla-javascript/index.ts[]
 ----
 
-==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts[vanilla-javascript/index.ts]
+==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html[vanilla-javascript/index.html]
 
 [source,typescript]
 ----
