@@ -171,7 +171,7 @@ include::../packages/vanilla-javascript/index.html[]
 include::../packages/vanilla-javascript/broadcast.ts[]
 ----
 
-## Htmx WebSocket Extensionを使った実装
+== Htmx WebSocket Extensionを使った実装
 
 わたしは `$ROOT/packages/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
 
@@ -193,6 +193,28 @@ $ tree -L 1
 ----
 
 `cd $ROOT/packages/htmx-ws` したうえで `bun ./index.ts` を実行してサーバーを起動しブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./broadcast.ts` を実行すればbroadcastのデモが動きます。どちらもVanilla JavaScriptによる実装と見た目は同じです。
+
+=== htmx-ws/index.html
+
+[source,typescript]
+----
+include::../packages/htmx-ws/index.html[]
+----
+
+=== htmx-ws/index.ts
+
+[source,typescript]
+----
+include::../packages/htmx-ws/index.ts[]
+----
+
+=== htmx-ws/broadcast.ts
+
+[source,typescript]
+----
+include::../packages/htmx-ws/broadcast.ts[]
+----
+
 
 ## 二つの実装を比べてみよう
 

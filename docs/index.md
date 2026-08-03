@@ -320,6 +320,150 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 `cd $ROOT/packages/htmx-ws` したうえで `bun ./index.ts` を実行してサーバーを起動しブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./broadcast.ts` を実行すればbroadcastのデモが動きます。どちらもVanilla JavaScriptによる実装と見た目は同じです。
 
+### htmx-ws/index.html
+
+    <!-- packages/htmx-ws/index.html -->
+    <!doctype html>
+    <html>
+        <head>
+            <title>WebSocket with Bun and JavaScript</title>
+            <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+                integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"
+                integrity="sha384-1RwI/nvUSrMRuNj7hX1+27J8XDdCoSLf0EjEyF69nacuWyiJYoQ/j39RT1mSnd2G"
+                crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+        </head>
+        <body>
+            <main class="container">
+                <div hx-ext="ws" ws-connect="/chat">
+                    <form id="form" ws-send>
+                        Message: <input type="text" name="message" value="Hello!" />
+                        <input type="submit" value="Submit" />
+                    </form>
+                </div>
+                <br />
+                <ul id="websocket_events"></ul>
+            </main>
+        </body>
+    </html>
+
+### htmx-ws/index.ts
+
+    // packages/htmx-ws/index.ts
+    console.log("🤗 Hello via Bun! 🐰");
+    const server = Bun.serve({
+        port: 8080,
+        fetch(req, server) {
+            const url = new URL(req.url);
+            if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+            if (url.pathname === "/surprise") return new Response("🎁");
+            if (url.pathname === "/chat") {
+                if (server.upgrade(req)) {
+                    return; // do not return a Response
+                }
+                return new Response("Filed upgrading to WebSocket", {status: 400});
+            }
+            return new Response("404!");
+        },
+        websocket: {
+            open(ws) {
+                console.log("👋 A new Websocket Connection");
+                const serverName = "htmx-ws/index.ts"
+                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>serverName: ${serverName}</li>` +
+                    '<li>👋 Welcome baby</li>' + "</div>");
+            },
+            message(ws, data) {
+                console.log(data)
+                let d = JSON.parse(data.toString())
+                let response = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>✉️ Server received a message from you: ${d.message}</li>` +
+                    "</div>";
+                console.log(response);
+                ws.send(response);
+            },
+            close(ws, code, message) {
+                console.log("⏹️ A Websocket Connection is CLOSED");
+            },
+            drain(ws) {
+                console.log("DRAIN EVENT");
+            }, // the socket is ready to receive more data
+        }
+    });
+    console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
+
+### htmx-ws/broadcast.ts
+
+    // packages/htmx-ws/broadcast.ts
+    console.log("🤗 Hello via Bun! 🐰");
+    const topic = 'the-group-chat';
+    const server = Bun.serve({
+        port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
+        fetch(req, server) {
+            const url = new URL(req.url);
+            if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+            if (url.pathname === "/surprise") return new Response("🎁");
+
+            if (url.pathname === "/chat") {
+                if (server.upgrade(req)) {
+                    return; // do not return a Response
+                }
+                return new Response("Upgrade failed", { status: 400 });
+            }
+
+            return new Response("404!");
+        },
+        websocket: {
+            open(ws) {
+                console.log("👋 A new Websocket Connection");
+                const serverName = "htmx-ws/broadcast.ts"
+                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>serverName: ${serverName}</li>` +
+                    '<li>👋 Welcome baby</li>' + "</div>");
+                ws.subscribe(topic);
+                ws.publish(topic,
+                    '<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>🥳 A new friend is joining the Party</li>` +
+                    "</div>");
+            }, // a socket is opened
+            message(ws, data) {
+                let d = JSON.parse(data.toString())
+                console.log("✉️ A new Websocket Message is received: " + d.message);
+                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>✉️ Server received a message from you: ${d.message}</li>` +
+                    "</div>");
+                ws.publish(
+                    topic,
+                    '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+                    `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
+                    "</div>"
+                );
+            }, // a message is received
+            close(ws, code, message) {
+                console.log("⏹️ A Websocket Connection is CLOSED");
+                const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>A Friend has left the chat</li>` +
+                    "</div>";
+                ws.unsubscribe(topic);
+                ws.publish(topic, msg);
+            }, // a socket is closed
+            drain(ws) {
+                console.log("DRAIN EVENT");
+            }, // the socket is ready to receive more data
+        },
+    });
+    console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
+
+    setInterval(() => {
+        const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>Hello from the Server, this is a periodic message!</li>` +
+                    "</div>";
+        server.publish(topic, msg);
+        console.log(`Message sent to "${topic}": ${msg}`);
+    }, 5000); // 5000 ms = 5 seconds
+
 ## 二つの実装を比べてみよう
 
 ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。どちらもほとんど同じように動きます。しかし、コードの中身は全く違います。Vanilla JavaScriptによる実装は、ブラウザが提供するWebSocket APIを直接使っているので、WebSocketの仕組みを理解するのに役立ちます。一方、Htmx WebSocket Extensionを使った実装は、Htmxが提供する便利な機能を使っているので、コードが簡潔になります。
