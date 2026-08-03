@@ -3,13 +3,12 @@
 
 # WebSocketプロトコルで連携するクライアントとサーバのデモ --- BunとHTMXによる
 
+バージョン: unknown
+レポジトリ: <https://github.com/kazurayam/websocket-demo>
+
 ## 概要
 
 WebSocketを使ったサーバとクライアントを紹介します。サーバはBunの上にTypeScript言語で実装した。クライアントはwebブラウザにHTMLをロードする形で実装した。ただしクライアントを実装するのに二通りの方法を試みた。ひとつは `<script>` タグの中にJavaScriptでコードをゴリゴリ書く素朴なやり方。もう一つは [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) を利用するやり方。同じように動く二つのアプリケーションを作ることにより、HtmxのWebSocket Extensionの使い方をより良く理解することができる。
-
-## 動機
-
-書籍 [「JavaScriptレスの動的UI開発 htmx入門」](https://www.amazon.co.jp/dp/487311920X) 太田智暉 著、C＆R研究所 （以下で "htmx本" と略する）のサンプルコードを読んで htmx を活用したwebアプリケーションを開発する手法を学ぼうと思った。htmx本の著者はPythonの [FastAPI](https://fastapi.tiangolo.com/advanced/websockets/#in-production) フレームワークを使ってサンプルアプリを作る方法を解説している。それはさておき、わたしはTypeScript言語とBunで作りたいと思った。htmx本のSECTION-024 "TODOアプリ" まで読み進めたところでQiitaに記事を書いて公開した: [Htmx and Playwright Tests in TypeScript](https://qiita.com/kazurayam/items/4a310e6a1470e01b1453)。続けて SECTION-025 "チャットアプリの作成" に進んだがつまづいてしまった。別のテキストを読んでWebSocketを基礎から学習しようと思った。
 
 ## WebSocketとは
 
@@ -23,7 +22,7 @@ AIによる要約:
 
 ## 目標
 
-この記事でわたしはクライアントを実装するために二通りの方法を試した。第一に、ブラウザが提供している [素のJavaScriptのWebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) だけを使う。第二に、[Htmx](https://htmx.org/docs/#introduction) を導入してクライアントを実装し、素のJavaScriptによるWebSocketアプリと [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) で同じように動作させることを目指す。素のJavaScriptによるコードがHtmxのWebSocket Extensionの解説になることを期待して。なおサーバーは [BunのWebSocket API](https://bun.com/docs/runtime/http/websockets) だけを使って実装する。クライアントの実装方法がどうあれサーバーの実装はほとんど同じで済むだろうと予想したが、本当にそ雨かどうかは、やってみないとわからない。
+この記事でわたしはクライアントを実装するために二通りの方法を試した。第一に、ブラウザが提供している [素のJavaScriptのWebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) だけを使う。第二に、[Htmx](https://htmx.org/docs/#introduction) を導入してクライアントを実装し、素のJavaScriptによるWebSocketアプリと [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) で同じように動作させることを目指す。素のJavaScriptによるコードがHtmxのWebSocket Extensionの解説になることを期待して。なおサーバーは [BunのWebSocket API](https://bun.com/docs/runtime/http/websockets) だけを使って実装する。クライアントの実装方法がどうあれサーバーの実装はほとんど同じで済むだろうと予想したが、本当にそうなるかどうか？やってみて観察しよう。
 
 ## 環境を構築する
 
@@ -55,6 +54,15 @@ AIによる要約:
 
 二つのディレクトリそれぞれの下にWebSocketアプリケーションを一つづつ作ろう。 `vanilla-javascript` ディレクトリの中ではブラウザが提供する [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) を素のJavaScriptが直接ドライブする例を実装しよう。 `htmx-ws` ディレクトリの中では [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/)を利用する例を実装しよう。
 
+`bun init` コマンドでbunプロジェクトを初期化した。
+
+    $ cd $ROOT/packages/vanilla-javascript
+    $ bun -init -y
+    $ cd $ROOT/packages/htmx-ws
+    $ bun -init -y
+
+`bun add` コマンドで追加すべき外部パッケージは無い。\`Bun.serve()\`がWebSocket APIを提供するので十分だ。
+
 ## Vanilla JavaScriptによる実装
 
 ### 参考にした記事
@@ -69,9 +77,11 @@ AIによる要約:
 
 ### Vanilla JavaScriptによる実装を動かしてみる
 
-ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。何はともあれそれを動かしてみよう。
+ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。
 
-サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
+- [packages/vanilla-javascript/](https://github.com/kazurayam/websocket-demo/tree/main/packages/vanilla-javascript)
+
+何はともあれそれを動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
 
     $ cd $ROOT/packages/vanilla-javascript
     $ bun ./index.ts
@@ -276,6 +286,10 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 わたしは `$ROOT/packages/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
 
+- [packages/htmx-ws/](https://github.com/kazurayam/websocket-demo/tree/main/packages/htmx-ws)
+
+<!-- -->
+
     $ cd $ROOT/packages/htmx-ws
     $ tree -L 1
     .
@@ -289,9 +303,9 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 `cd $ROOT/packages/htmx-ws` したうえで `bun ./index.ts` を実行してサーバーを起動しブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./broadcast.ts` を実行すればbroadcastのデモが動きます。どちらもVanilla JavaScriptによる実装と見た目は同じです。
 
-## 二つの実装のどこがどう違うか？
+## 二つの実装を比べてみよう
 
-ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。Vanilla JavaScriptによる実装とHtmx WebSocket Extensionを使った実装の二つです。どちらも同じように動きます。しかし、コードの中身は全く違います。Vanilla JavaScriptによる実装は、ブラウザが提供するWebSocket APIを直接使っているので、WebSocketの仕組みを理解するのに役立ちます。一方、Htmx WebSocket Extensionを使った実装は、Htmxが提供する便利な機能を使っているので、コードが簡潔で読みやすいです。
+ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。どちらもほとんど同じように動きます。しかし、コードの中身は全く違います。Vanilla JavaScriptによる実装は、ブラウザが提供するWebSocket APIを直接使っているので、WebSocketの仕組みを理解するのに役立ちます。一方、Htmx WebSocket Extensionを使った実装は、Htmxが提供する便利な機能を使っているので、コードが簡潔になります。
 
 ソースコードへのリンクを下記の表にまとめました。
 
@@ -485,8 +499,8 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 <table>
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 20%" />
+<col style="width: 80%" />
 </colgroup>
 <thead>
 <tr>
@@ -514,8 +528,8 @@ Vanilla JavaScriptによる実装では、サーバはメッセージとして�
 
 <table>
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 20%" />
+<col style="width: 80%" />
 </colgroup>
 <thead>
 <tr>
