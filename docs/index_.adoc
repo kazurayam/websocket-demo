@@ -71,31 +71,9 @@ $ tree -L 2
 2. link:https://dev.to/robertobutti/websocket-client-with-javascript-54ec[DEV / WebSocket Client with JavaScript, by ROBERTO BUTTI]
 3. link:https://dev.to/robertobutti/websocket-broadcasting-with-javascript-and-bun-3mkf[DEV / WebSocket broadcasting with JavaScript and Bun, by ROBERTO BUTTI]
 
-
-=== Vanilla JavaScriptによる実装のコード
-
-==== vanilla-javascript/index.ts
-
-[source,typescript]
-----
-include::../packages/vanilla-javascript/index.ts[]
-----
-
-==== vanilla-javascript/index.html
-
-[source,typescript]
-----
-include::../packages/vanilla-javascript/index.html[]
-----
-
-==== vanilla-javascript/broadcast.ts
-
-[source,typescript]
-----
-include::../packages/vanilla-javascript/broadcast.ts[]
-----
-
 === Vanilla JavaScriptによる実装を動かしてみる
+
+ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。何はともあれそれを動かしてみよう。
 
 サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
 
@@ -137,172 +115,126 @@ Message sent to "the-group-chat": Hello from the Server, this is a periodic mess
 
 image:https://kazurayam.github.io/websocket-demo/images/004_broadcast.png[broadcast]
 
-また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからの定期的なメッセージ `Hello from the Server, this is a periodic message!` がブラウザに表示されます。HTTPプロトコルがクライアントがrequestしサーバがreplyするの繰り返すのに対して、WebSocketプロトコルはサーバーからクライアントへの単方向通信も可能であることが特徴です。
+また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからの定期的なメッセージ `Hello from the Server, this is a periodic message!` がブラウザに表示されます。HTTPプロトコルの場合クライアントがrequestしサーバがreplyするの繰り返す。それに対して、WebSocketプロトコルはサーバーからクライアントへの単方向通信も可能であることが特徴です。
 
 image:https://kazurayam.github.io/websocket-demo/images/005_mono_directional_messaging.png[mono directional messaging]
 
+=== Vanilla JavaScriptによる実装のコード
+
+では、Vanilla JavaScriptによる実装のコードを紹介します。
+
+==== vanilla-javascript/index.ts
+
+[source,typescript]
+----
+include::../packages/vanilla-javascript/index.ts[]
+----
+
+==== vanilla-javascript/index.html
+
+[source,typescript]
+----
+include::../packages/vanilla-javascript/index.html[]
+----
+
+==== vanilla-javascript/broadcast.ts
+
+[source,typescript]
+----
+include::../packages/vanilla-javascript/broadcast.ts[]
+----
 
 ## Htmx WebSocket Extensionを使った実装
 
-## Demonstrating the Echo service using htmx websocket Extension
+わたしは `$ROOT/packages/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
 
-```
-$ cd $ROOT/htmx-ws
-$ HTMXWS=`pwd`
-```
+[source,shell]
+----
+$ cd $ROOT/packages/htmx-ws
+$ tree -L 1
+.
+├── broadcast.ts
+├── bun.lock
+├── index.html
+├── index.ts
+├── node_modules
+├── package.json
+└── tsconfig.json
+----
 
-Start the server:
+`cd $ROOT/packages/htmx-ws` したうえで `bun ./index.ts` を実行してサーバーを起動しブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./broadcast.ts` を実行すればbroadcastのデモが動きます。どちらもVanilla JavaScriptによる実装と見た目は同じです。
 
-```
-$ cd $HTMXWS
-$ bun ./index.ts
-```
+## 二つの実装のどこがどう違うか？
 
-You want to open a browser and navigate to `localhost:8080`.
+ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。Vanilla JavaScriptによる実装とHtmx WebSocket Extensionを使った実装の二つです。どちらも同じように動きます。しかし、コードの中身は全く違います。Vanilla JavaScriptによる実装は、ブラウザが提供するWebSocket APIを直接使っているので、WebSocketの仕組みを理解するのに役立ちます。一方、Htmx WebSocket Extensionを使った実装は、Htmxが提供する便利な機能を使っているので、コードが簡潔で読みやすいです。
 
-![htmx index.ts initial](https://kazurayam.github.io/websocket-demo/images/011_index.ts_initial.png)
+ソースコードへのリンクを下記の表にまとめました。
 
-Now you are ready to type a message and submit it.
+|====
+| Vanilla JavaScriptによる実装 | HtmxのWebSocket拡張による実装
 
-The following screenshot shows how it looks like after a few times of message exchanges.
-
-![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/012_index.ts_exchanged.png)
-
-As you see, the "htmx-ws" demonstration presents almost the same Web page view.
-
-### Comparing the 2 implementation
-
-The 2 implementation codes are quite different. If you read the 2 codes, compare in detail, you will understand the htmx websocket extension --- how it works, how you should use it.
-
-| Vanilla JavaScript | | Htmx WebSocket extension |
-| ----- |--- |  ----- |
-| [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html) | <=> | [index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html) |
-| [index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts) | <=> |[index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts) |
+| link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html[vanila-javascript/index.html] | link:https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html[htmx-ws/index.html]
+| link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts[vanilla-javascript/index.ts] | link:https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts[htmx-ws/index.ts]
+| link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/broadcast.ts[vanilla-javascript/broadcast.ts] | link:https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/broadcast.ts[htmx-ws/broadcast.ts]
+|====
 
 
-#### Diff of index.html
+=== 二つの実装の差異を読み解く
 
-```
-$ diff packages/vanilla-javascript/index.html packages/htmx-ws/index.html
-6,34c6,11
-<         <script>
-<             let echo_service;
-<             append = function (text) {
-<                 document
-<                 .getElementById("websocket_events")
-<                 .insertAdjacentHTML("beforeend",
-<                     "<li>" + text + ";</li>");
-<             };
-<             window.onload = function () {
-<                 echo_service = new WebSocket("ws://127.0.0.1:8080/chat");
-<                 echo_service.onmessage = function (event) {
-<                     append(event.data);
-<                 };
-<                 echo_service.onopen = function () {
-<                     append("🚀 Connected to WebSocket!");
-<                 };
-<                 echo_service.onclose = function () {
-<                     append("Connection closed");
-<                 };
-<                 echo_service.onerror = function () {
-<                     append("Error happens");
-<                 };
-<             };
-<
-<             function sendMessage() {
-<                 let message = document.getElementById("message").value;
-<                 echo_service.send(message);
-<             }
-<         </script>
----
->         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
->             integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
->             crossorigin="anonymous"></script>
->         <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"
->             integrity="sha384-1RwI/nvUSrMRuNj7hX1+27J8XDdCoSLf0EjEyF69nacuWyiJYoQ/j39RT1mSnd2G"
->             crossorigin="anonymous"></script>
-39,44c16,21
-<             Message: <input value="Hello!" type="text" id="message" />
-<             <input
-<                 type="button"
-<                 value="Submit"
-<                 id="btn"
-<             />
----
->             <div hx-ext="ws" ws-connect="/chat">
->                 <form id="form" ws-send>
->                     Message: <input type="text" name="message" value="Hello!" />
->                     <input type="submit" value="Submit" />
->                 </form>
->             </div>c
-48,55d24
-<         <script>
-<             let msg = document.querySelector('input#message');
-<             let btn = document.querySelector('input#btn');
-<             btn.addEventListener("click", function (event) {
-<                 sendMessage(event);
-<                 msg.value = '';
-<             })
-<         </script>
-```
+`diff` コマンドで二つの実装のソースコードの差異を可視化しました。
 
-#### Diff of index.ts
+==== Diff of index.html
 
-```
-$ diff packages/vanilla-javascript/index.ts packages/htmx-ws/index.ts
-19c19,20
-<             ws.send("👋 Welcome baby");
----
->             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
->                 '<li>👋 Welcome baby</li>' + "</div>");
-21,23c22,27
-<         message(ws, message) {
-<             console.log("✉️ A new Websocket Message is received: " + message);
-<             ws.send("✉️ Server received a message from you: " + message);
----
->         message(ws, data) {
->             let d = JSON.parse(data.toString())
->             console.log("✉️ A new Websocket Message is received: " + d.message);
->             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
->                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
->                 "</div>");
-```
+[source,diff]
+----
+include::./index.html.diff[]
+----
 
+==== Diff of index.ts
 
-## Demonstrating the Broadcast service by Vanilla JavaScript
+[source,diff]
+----
+include::./index.ts.diff[]
+----
 
-```
-$ bun ./broadcast.ts
-🤗 Hello via Bun! 🐰
-🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-...
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-👋 A new Websocket Connection
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-...
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-👋 A new Websocket Connection
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-...
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-✉️ A new Websocket Message is received: ça va
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-...
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-✉️ A new Websocket Message is received: こんにちは
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-...
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-⏹️ A Websocket Connection is CLOSED
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-...
-Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
-^C
-```
+==== Diff of broadcast.ts
 
-## Demonstrating the Broadcast service using Htmx WebSocket Extension
+[source,diff]
+----
+include::./broadcast.ts.diff[]
+----
 
+=== クライアントとサーバの間で送受信されるメッセージの内容を比較する
+
+`vanilla-javascript/index.ts` と `htmx-ws/index.ts` の二つのサーバーを起動して、ブラウザでそれぞれのクライアントを開き、ブラウザの開発者ツールのNetworkタブでWebSocket通信の内容を観察しました。どちらの場合も `<input type="text">` の中に「こんにちは」という文字を入力してSubmitしました。Submitされたモノをサーバが受け取ったところでそれをconsole.logに表示してみました。
+
+==== Vanilla JavaScriptの場合
+
+`vanilla-javascript/index.ts` サーバーを起動して、ブラウザでそれぞれのクライアントを開き、ブラウザの開発者ツールのNetworkタブでWebSocket通信の内容を観察しました。
+
+|====
+|方向 | 送受信されるメッセージの内容
+
+| ブラウザ -> サーバ | `こんにちは`
+| ブラウザ <- サーバ | `✉️ A new Websocket Message is received: こんにちは`
+|====
+
+Vanilla JavaScriptによる実装では、ブラウザがWebSocket APIを直接使っているので、送受信されるメッセージの内容は素の文字列です。
+
+Vanilla JavaScriptによる実装では、サーバはメッセージとしての「こんにちは」という文字列を単純にechoするだけであって、サーバのコードはHTMLのコードと結びついていません。
+
+==== Htmx WebSocketの場合
+
+|====
+|方向 | 送受信されるメッセージの内容
+
+|ブラウザ -> サーバ | `{"message":"こんにちは","HEADERS":{"HX-Request":"true","HX-Trigger":"form","HX-Trigger-Name":null,"HX-Target":"form","HX-Current-URL":"http://localhost:8080/"}}`
+|ブラウザ <- サーバ |  `<div hx-swap-oob="beforeend:#websocket_events"><li>✉️ Server received a message from you: こんにちは</li></div>`
+|====
+
+Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字はJSONの一部として運ばれます。 `vanila-javascirpt/index.ts` はJSONを構文解析して「こんにちは」を取り出す仕事をします。またサーバが送り返すテキストは HTML構文のfragmentになっています。Htmxは `<div hx-swap-oob="beforeend:#websocket_events">` というコードから `websocket_events` というIDを持つHTML要素（具体的には `<ul>` ）をターゲットとして特定します。Htmxはターゲットの内容の末尾に `<li>...</li>` を挿入します。これを見ればわかるように、Htmx WebSocket拡張を使った実装の場合、サーバーの `onMessage` イベントハンドラが ターゲットとしてのHTMLのコードを少し意識したコードになってしまいます。
+
+== 結論
+
+HTMLの中に `<script>` タグでWebSocket APIをドライブするカスタムなJavaScriptを書くやり方と、もう一つHtmxのWebSocket拡張を利用するやり方と、ふた通りのデモを実装した。`<script>` をHtmxで置き換えることができるのでHtmxを使えばコードの行数が全体として少なくなる。そのメリットは大きい。ただしWebSocket APIを操作する細部をHtmxが隠蔽するので、Htmx WebSocket Extensionの使い方はいささか理解しづらい。Vanilla JavaScriptによる実装と比較してようやくHtmx WebSocket Extensionを理解することができた。
 

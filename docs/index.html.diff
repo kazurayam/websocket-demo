@@ -1,0 +1,64 @@
+1d0
+< <!-- packages/vanilla-javascript/index.html -->
+2a2
+> 
+6,34c6,11
+<         <script>
+<             let echo_service;
+<             append = function (text) {
+<                 document
+<                 .getElementById("websocket_events")
+<                 .insertAdjacentHTML("beforeend",
+<                     "<li>" + text + ";</li>");
+<             };
+<             window.onload = function () {
+<                 echo_service = new WebSocket("ws://127.0.0.1:8080/chat");
+<                 echo_service.onmessage = function (event) {
+<                     append(event.data);
+<                 };
+<                 echo_service.onopen = function () {
+<                     append("🚀 Connected to WebSocket!");
+<                 };
+<                 echo_service.onclose = function () {
+<                     append("Connection closed");
+<                 };
+<                 echo_service.onerror = function () {
+<                     append("Error happens");
+<                 };
+<             };
+< 
+<             function sendMessage() {
+<                 let message = document.getElementById("message").value;
+<                 echo_service.send(message);
+<             }
+<         </script>
+---
+>         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"
+>             integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+>             crossorigin="anonymous"></script>
+>         <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"
+>             integrity="sha384-1RwI/nvUSrMRuNj7hX1+27J8XDdCoSLf0EjEyF69nacuWyiJYoQ/j39RT1mSnd2G"
+>             crossorigin="anonymous"></script>
+39,44c16,21
+<             Message: <input value="Hello!" type="text" id="message" />
+<             <input
+<                 type="button"
+<                 value="Submit"
+<                 id="btn"
+<             />
+---
+>             <div hx-ext="ws" ws-connect="/chat">
+>                 <form id="form" ws-send>
+>                     Message: <input type="text" name="message" value="Hello!" />
+>                     <input type="submit" value="Submit" />
+>                 </form>
+>             </div>
+48,55d24
+<         <script>
+<             let msg = document.querySelector('input#message');
+<             let btn = document.querySelector('input#btn');
+<             btn.addEventListener("click", function (event) {
+<                 sendMessage(event);
+<                 msg.value = '';
+<             })
+<         </script>

@@ -23,6 +23,7 @@ const server = Bun.serve({
             ws.send("👋 Welcome baby");
         },
         message(ws, message) {
+            console.log(message)
             console.log("✉️ A new Websocket Message is received: " + message);
             ws.send("✉️ Server received a message from you: " + message);
         },

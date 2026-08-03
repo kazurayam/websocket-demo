@@ -1,0 +1,53 @@
+1,2d0
+< // packages/vanilla-javascript/broadcast.ts
+< 
+22,29d19
+<         message(ws, message) {
+<             console.log("✉️ A new Websocket Message is received: " + message);
+<             ws.send("✉️ I received a message from you:  " + message);
+<             ws.publish(
+<                 topic,
+<                 `📢 Message from ${ws.remoteAddress}: ${message}`,
+<             );
+<         }, // a message is received
+31a22,25
+>             const serverName = "htmx-ws/broadcast.ts"
+>             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 `<li>serverName: ${serverName}</li>` +
+>                 '<li>👋 Welcome baby</li>' + "</div>");
+33,36c27,30
+<             const serverName = "vanilla-javascript/broadcast.ts"
+<             ws.send(`serverName: ${serverName}`);
+<             ws.send("👋 Welcome baby");
+<             ws.publish(topic, "🥳 A new friend is joining the Party");
+---
+>             ws.publish(topic,
+>                 '<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 `<li>🥳 A new friend is joining the Party</li>` +
+>                 "</div>");
+37a32,44
+>         message(ws, data) {
+>             let d = JSON.parse(data.toString())
+>             console.log("✉️ A new Websocket Message is received: " + d.message);
+>             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
+>                 "</div>");
+>             ws.publish(
+>                 topic,
+>                 '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+>                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
+>                 "</div>"
+>             );
+>         }, // a message is received
+40c47,49
+<             const msg = `A Friend has left the chat`;
+---
+>             const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 `<li>A Friend has left the chat</li>` +
+>                 "</div>";
+52c61,63
+<     const msg = "Hello from the Server, this is a periodic message!";
+---
+>     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+>                 `<li>Hello from the Server, this is a periodic message!</li>` +
+>                 "</div>";

@@ -22,11 +22,13 @@ const server = Bun.serve({
                 '<li>👋 Welcome baby</li>' + "</div>");
         },
         message(ws, data) {
+            console.log(data)
             let d = JSON.parse(data.toString())
-            console.log("✉️ A new Websocket Message is received: " + d.message);
-            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+            let response = '<div hx-swap-oob="beforeend:#websocket_events">' +
                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
-                "</div>");
+                "</div>";
+            console.log(response);
+            ws.send(response);
         },
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");
