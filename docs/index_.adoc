@@ -220,7 +220,7 @@ include::../packages/htmx-ws/broadcast.ts[]
 
 ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。ほとんど同じように動作します。
 
-=== 二つの実装の差異を読み解く
+=== 二つの実装のdiff
 
 しかし、コードはまったく違います。Vanilla JavaScriptによる実装は、ブラウザが提供するWebSocket APIの使い方を理解するのに役立ちます。ただしWebSocket APIのお作法をなぞらなければならないのでコードが長くなった。一方、Htmx WebSocket Extensionを利用した実装はコードが簡潔になります。
 
@@ -261,7 +261,7 @@ Chat画面に「こんにちは」とメッセージを入力しSubmitした時�
 | ブラウザ <- サーバ | `✉️ A new Websocket Message is received: こんにちは`
 |====
 
-Vanilla JavaScriptによる実装では、ブラウザがWebSocket APIを直接使っているので、送受信されるメッセージの内容は素の文字列です。
+Vanilla JavaScriptによる実装では、`<script>` のなかのカスタムなJavaScriptコードがWebSocket APIを直接使っていて、「こんにちは」という文字列を修飾なしに送受信しています。
 
 Vanilla JavaScriptによる実装では、サーバはメッセージとしての「こんにちは」という文字列を単純にechoするだけです。「こんにちは」という文字列をブラウザ上の画面に反映する処理はクライアントのJavaScriptに任されている。サーバのコードは画面編集にまったく関与しません。
 
@@ -299,3 +299,5 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
 Htmx WebSocket Extensionを使えば `<script>` を自作しないで済むからコード行数が少なくなって楽だ。しかしHtmxがWebSocket APIをすっかり隠してしまう。そのせいでHtmx WebSocket Extensionがどう動くのか、どう使えば良いのか、わからなかった。白状するとわたしは link:https://htmx.org/extensions/ws/[Htmx WebSocket Extensionのドキュメント] を読んでも理解できなかった。WebSocket APIを活用するJavaScriptプログラミングに熟達したプログラマならばあのドキュメントを解読できるかもしれないが、技量不足なわたしにはさっぱりだった。
 
 自分の技量不足を自覚したので、私はHTMLの中に `<script>` タグでWebSocket APIをドライブするカスタムなJavaScriptを書くやり方と、もう一つHtmxのWebSocket拡張を利用するやり方との、二通りのWebSocketのデモを作ってみた。Vanilla JavaScriptによる実装を作って動かすことに成功してはじめて、「ははあ、Htmx WebSocket Extensionって、つまりこれと同じような処理をしているのだな」と類推することができた。
+
+WebSocketクライアントとしてのHtmx WebSocket ExtensionとWeb Socketサーバーとの間でデータがどういうフォーマットで交換されるか、それを理解すること、あるいはそれを仕様として定義すること、それが出発点なのだ。昔、わたしが職場で使っていた言葉使いに則るなら「接続仕様」を決めることが最初にすべきことなのだ。交換されるデータのフォーマットを規定した後でようやくWebSocketのクライアントとサーバのコードを書くことができる。なぜわたしがlink:https://htmx.org/extensions/ws/[Htmx WebSocket Extensionのドキュメント] を理解できなかったのか？今ならわかる。このドキュメントには「接続仕様」が説明されていない体。もしかしたらHtmxのドキュメントのどこかに書かれているのかもしれないがわたしはまだ見つけることができていない。
