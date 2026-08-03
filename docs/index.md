@@ -1,7 +1,7 @@
 - Table of contents
 {:toc}
 
-# BunとHtmxによるWebSocketのデモ
+# WebSocketプロトコルで連携するクライアントとサーバのデモ --- BunとHTMXによる
 
 ## 概要
 
