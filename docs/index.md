@@ -706,4 +706,4 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
 
 Htmx WebSocket Extensionを使えば `<script>` を自作しないで済むからコード行数が少なくなって楽だ。しかしHtmxがWebSocket APIをすっかり隠してしまう。そのせいでHtmx WebSocket Extensionがどう動くのか、どう使えば良いのか、わからなかった。白状するとわたしは [Htmx WebSocket Extensionのドキュメント](https://htmx.org/extensions/ws/) を読んでも理解できなかった。WebSocket APIを活用するJavaScriptプログラミングに熟達したプログラマならばあのドキュメントを解読できるかもしれないが、技量不足なわたしにはさっぱりだった。
 
-自分の技量不足を自覚したので、私はHTMLの中に `<script>` タグでWebSocket APIをドライブするカスタムなJavaScriptを書くやり方と、もう一つHtmxのWebSocket拡張を利用するやり方との、二通りのWebSocketのデモを作ってみた。Vanilla JavaScriptによる実装を作って動かすことに成功して、「ははあ、Htmx WebSocket Extensionって、つまりこれと同じような処理をしているのだな」と類推することができた。
+自分の技量不足を自覚したので、私はHTMLの中に `<script>` タグでWebSocket APIをドライブするカスタムなJavaScriptを書くやり方と、もう一つHtmxのWebSocket拡張を利用するやり方との、二通りのWebSocketのデモを作ってみた。Vanilla JavaScriptによる実装を作って動かすことに成功してはじめて、「ははあ、Htmx WebSocket Extensionって、つまりこれと同じような処理をしているのだな」と類推することができた。
