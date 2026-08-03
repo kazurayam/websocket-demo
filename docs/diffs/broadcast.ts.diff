@@ -1,7 +1,8 @@
-1,2d0
+1c1
 < // packages/vanilla-javascript/broadcast.ts
-< 
-22,29d19
+---
+> // packages/htmx-ws/broadcast.ts
+21,28d20
 <         message(ws, message) {
 <             console.log("✉️ A new Websocket Message is received: " + message);
 <             ws.send("✉️ I received a message from you:  " + message);
@@ -10,12 +11,12 @@
 <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
 <             );
 <         }, // a message is received
-31a22,25
+30a23,26
 >             const serverName = "htmx-ws/broadcast.ts"
 >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>serverName: ${serverName}</li>` +
 >                 '<li>👋 Welcome baby</li>' + "</div>");
-33,36c27,30
+32,35c28,31
 <             const serverName = "vanilla-javascript/broadcast.ts"
 <             ws.send(`serverName: ${serverName}`);
 <             ws.send("👋 Welcome baby");
@@ -25,7 +26,7 @@
 >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>🥳 A new friend is joining the Party</li>` +
 >                 "</div>");
-37a32,44
+36a33,45
 >         message(ws, data) {
 >             let d = JSON.parse(data.toString())
 >             console.log("✉️ A new Websocket Message is received: " + d.message);
@@ -39,13 +40,13 @@
 >                 "</div>"
 >             );
 >         }, // a message is received
-40c47,49
+39c48,50
 <             const msg = `A Friend has left the chat`;
 ---
 >             const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>A Friend has left the chat</li>` +
 >                 "</div>";
-52c61,63
+51c62,64
 <     const msg = "Hello from the Server, this is a periodic message!";
 ---
 >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +

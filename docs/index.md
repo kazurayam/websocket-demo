@@ -8,21 +8,20 @@
 
 ## 概要
 
-WebSocketを使ったサーバとクライアントを紹介します。サーバはBunの上にTypeScript言語で実装した。クライアントはwebブラウザにHTMLをロードする形で実装した。ただしクライアントを実装するのに二通りの方法を試みた。ひとつは `<script>` タグの中にJavaScriptでコードをゴリゴリ書く素朴なやり方。もう一つは [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) を利用するやり方。同じように動く二つのアプリケーションを作ることにより、HtmxのWebSocket Extensionの使い方をより良く理解することができる。
+WebSocketプロトコルで連携するサーバとクライアントを紹介します。サーバはBunの上にTypeScript言語で実装した。クライアントはwebブラウザにHTMLをロードする形で実装した。クライアントを実装するのに二通りの方法を試みた。ひとつは `<script>` タグの中にJavaScriptでコードをゴリゴリ書く素朴なやり方。もう一つは [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) を利用するやり方。同じ動作をする二つのコードを書くことにより、Htmxの使い方をより良く理解することができた。
 
 ## WebSocketとは
 
-AIによる要約:
+AIによる要約と和訳:
 
 &gt;WebSocket is a protocol that enables a persistent, bidirectional communication channel over a single TCP connection, allowing servers to push data to clients without prior requests. The WebSocket API in browsers lets you create and manage a WebSocket connection using the WebSocket() constructor and handle events like open, message, error, and close.
+&gt;WebSocketは、単一のTCP接続上で永続的かつ双方向の通信チャネルを可能にするプロトコルであり、サーバーが事前のリクエストなしにクライアントにデータをプッシュできるようにします。ブラウザのWebSocket APIでは、WebSocket()コンストラクタを使ってWebSocket接続を作成・管理し、開く、メッセージ、エラー、クローズなどのイベントを処理できます。
 
 - [WikipediaのWebSocketのページ](https://ja.wikipedia.org/wiki/WebSocket)
 
 - [MDN WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 
-## 目標
-
-この記事でわたしはクライアントを実装するために二通りの方法を試した。第一に、ブラウザが提供している [素のJavaScriptのWebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) だけを使う。第二に、[Htmx](https://htmx.org/docs/#introduction) を導入してクライアントを実装し、素のJavaScriptによるWebSocketアプリと [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/) で同じように動作させることを目指す。素のJavaScriptによるコードがHtmxのWebSocket Extensionの解説になることを期待して。なおサーバーは [BunのWebSocket API](https://bun.com/docs/runtime/http/websockets) だけを使って実装する。クライアントの実装方法がどうあれサーバーの実装はほとんど同じで済むだろうと予想したが、本当にそうなるかどうか？やってみて観察しよう。
+- [HtmxのWebSocket Extension](https://htmx.org/extensions/ws/)
 
 ## 環境を構築する
 
@@ -85,7 +84,6 @@ ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanil
 
     $ cd $ROOT/packages/vanilla-javascript
     $ bun ./index.ts
-    $ bun ./index.ts
     🤗 Hello via Bun! 🐰
     🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
 
@@ -126,7 +124,6 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 #### vanilla-javascript/index.ts
 
     // packages/vanilla-javascript/index.ts
-
     console.log("🤗 Hello via Bun! 🐰");
     const server = Bun.serve({
         port: 8080,
@@ -227,7 +224,6 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 #### vanilla-javascript/broadcast.ts
 
     // packages/vanilla-javascript/broadcast.ts
-
     console.log("🤗 Hello via Bun! 🐰");
     const topic = 'the-group-chat';
     const server = Bun.serve({
@@ -342,10 +338,10 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 #### Diff of index.html
 
-    1d0
+    1c1
     < <!-- packages/vanilla-javascript/index.html -->
-    2a2
-    > 
+    ---
+    > <!-- packages/htmx-ws/index.html -->
     6,34c6,11
     <         <script>
     <             let echo_service;
@@ -409,10 +405,11 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 #### Diff of index.ts
 
-    1,2d0
+    1c1
     < // packages/vanilla-javascript/index.ts
-    < 
-    21,23c19,22
+    ---
+    > // packages/htmx-ws/index.ts
+    20,22c20,23
     <             const serverName = "vanilla-javascript/index.ts"
     <             ws.send(`serverName: ${serverName}`);
     <             ws.send("👋 Welcome baby");
@@ -421,24 +418,28 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>serverName: ${serverName}</li>` +
     >                 '<li>👋 Welcome baby</li>' + "</div>");
-    25,27c24,29
+    24,27c25,32
     <         message(ws, message) {
+    <             console.log(message)
     <             console.log("✉️ A new Websocket Message is received: " + message);
     <             ws.send("✉️ Server received a message from you: " + message);
     ---
     >         message(ws, data) {
+    >             console.log(data)
     >             let d = JSON.parse(data.toString())
-    >             console.log("✉️ A new Websocket Message is received: " + d.message);
-    >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+    >             let response = '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
-    >                 "</div>");
+    >                 "</div>";
+    >             console.log(response);
+    >             ws.send(response);
 
 #### Diff of broadcast.ts
 
-    1,2d0
+    1c1
     < // packages/vanilla-javascript/broadcast.ts
-    < 
-    22,29d19
+    ---
+    > // packages/htmx-ws/broadcast.ts
+    21,28d20
     <         message(ws, message) {
     <             console.log("✉️ A new Websocket Message is received: " + message);
     <             ws.send("✉️ I received a message from you:  " + message);
@@ -447,12 +448,12 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
     <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
     <             );
     <         }, // a message is received
-    31a22,25
+    30a23,26
     >             const serverName = "htmx-ws/broadcast.ts"
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>serverName: ${serverName}</li>` +
     >                 '<li>👋 Welcome baby</li>' + "</div>");
-    33,36c27,30
+    32,35c28,31
     <             const serverName = "vanilla-javascript/broadcast.ts"
     <             ws.send(`serverName: ${serverName}`);
     <             ws.send("👋 Welcome baby");
@@ -462,7 +463,7 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
     >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>🥳 A new friend is joining the Party</li>` +
     >                 "</div>");
-    37a32,44
+    36a33,45
     >         message(ws, data) {
     >             let d = JSON.parse(data.toString())
     >             console.log("✉️ A new Websocket Message is received: " + d.message);
@@ -476,13 +477,13 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
     >                 "</div>"
     >             );
     >         }, // a message is received
-    40c47,49
+    39c48,50
     <             const msg = `A Friend has left the chat`;
     ---
     >             const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>A Friend has left the chat</li>` +
     >                 "</div>";
-    52c61,63
+    51c62,64
     <     const msg = "Hello from the Server, this is a periodic message!";
     ---
     >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
@@ -551,6 +552,6 @@ Vanilla JavaScriptによる実装では、サーバはメッセージとして�
 
 Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字はJSONの一部として運ばれます。 `vanila-javascirpt/index.ts` はJSONを構文解析して「こんにちは」を取り出す仕事をします。またサーバが送り返すテキストは HTML構文のfragmentになっています。Htmxは `<div hx-swap-oob="beforeend:#websocket_events">` というコードから `websocket_events` というIDを持つHTML要素（具体的には `<ul>` ）をターゲットとして特定します。Htmxはターゲットの内容の末尾に `<li>…​</li>` を挿入します。これを見ればわかるように、Htmx WebSocket拡張を使った実装の場合、サーバーの `onMessage` イベントハンドラが ターゲットとしてのHTMLのコードを少し意識したコードになってしまいます。
 
-## 結論
+## 結び
 
 HTMLの中に `<script>` タグでWebSocket APIをドライブするカスタムなJavaScriptを書くやり方と、もう一つHtmxのWebSocket拡張を利用するやり方と、ふた通りのデモを実装した。`<script>` をHtmxで置き換えることができるのでHtmxを使えばコードの行数が全体として少なくなる。そのメリットは大きい。ただしWebSocket APIを操作する細部をHtmxが隠蔽するので、Htmx WebSocket Extensionの使い方はいささか理解しづらい。Vanilla JavaScriptによる実装と比較してようやくHtmx WebSocket Extensionを理解することができた。

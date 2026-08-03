@@ -1,3 +1,4 @@
+// packages/htmx-ws/index.ts
 console.log("🤗 Hello via Bun! 🐰");
 const server = Bun.serve({
     port: 8080,

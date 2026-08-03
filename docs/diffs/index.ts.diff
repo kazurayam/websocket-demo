@@ -1,7 +1,8 @@
-1,2d0
+1c1
 < // packages/vanilla-javascript/index.ts
-< 
-21,23c19,22
+---
+> // packages/htmx-ws/index.ts
+20,22c20,23
 <             const serverName = "vanilla-javascript/index.ts"
 <             ws.send(`serverName: ${serverName}`);
 <             ws.send("👋 Welcome baby");
@@ -10,14 +11,17 @@
 >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>serverName: ${serverName}</li>` +
 >                 '<li>👋 Welcome baby</li>' + "</div>");
-25,27c24,29
+24,27c25,32
 <         message(ws, message) {
+<             console.log(message)
 <             console.log("✉️ A new Websocket Message is received: " + message);
 <             ws.send("✉️ Server received a message from you: " + message);
 ---
 >         message(ws, data) {
+>             console.log(data)
 >             let d = JSON.parse(data.toString())
->             console.log("✉️ A new Websocket Message is received: " + d.message);
->             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+>             let response = '<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
->                 "</div>");
+>                 "</div>";
+>             console.log(response);
+>             ws.send(response);
