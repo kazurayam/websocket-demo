@@ -683,7 +683,7 @@ Vanilla JavaScriptによる実装では、サーバはメッセージとして�
 </tbody>
 </table>
 
-Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字列がJSONの内容の一部として運ばれます。HTMLの下記のコード片をみよ。
+Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字列がJSONの内容の一部として運ばれます。Htmxがどうしてそのような動作をするのか？HTMLの下記のコード片をみよ。
 
     <!-- packages/htmx-ws/index.html -->
     ...
