@@ -275,7 +275,17 @@ Vanilla JavaScriptによる実装では、サーバはメッセージとして�
 |ブラウザ <- サーバ |  `<div hx-swap-oob="beforeend:#websocket_events"><li>✉️ Server received a message from you: こんにちは</li></div>`
 |====
 
-Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字列がJSONの内容の一部として運ばれます。 `htmx-ws` のサーバーはJSONを構文解析して「こんにちは」を取り出す仕事をします。またサーバはHTML構文のfragmentを組み立てて応答しています。`htmx-ws/index.ts` ファイルの25行目あたりにこの処理が記述されています。
+Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字列がJSONの内容の一部として運ばれます。HTMLの下記のコード片をみよ。
+
+```
+<!-- packages/htmx-ws/index.html -->
+...
+                    Message: <input type="text" name="message" value="Hello!" />
+```
+
+`<input>` タグに `name` 属性が付与されていてその値が `message` と指定されていることに注意。このように指定されているからHTMXは Formがsubmitされた時にサーバへ投げるJSONの中に `{"message":"こんにちは", ...` というkey-value pairを埋め込みます。もしも `<input>` タグに `name` 属性を付与するのを忘れるとHTMXはJSONに埋め込むべきデータを認識できなくて、有意なデータを持たないJSONがサーバに届くことになります。それじゃダメ。
+
+`htmx-ws` のサーバーはJSONを構文解析して「こんにちは」を取り出す仕事をします。またサーバはHTML構文のfragmentを組み立てて応答しています。`htmx-ws/index.ts` ファイルの25行目あたりにこの処理が記述されています。
 
 [source, typescript]
 ----
