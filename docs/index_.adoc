@@ -300,7 +300,16 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
         },
 ----
 
-ブラウザ上で動いているHtmxの実行系はサーバから送信されたHTML Frament `<div hx-swap-oob="beforeend:#websocket_events">` を解析します。 `websocket_events` というIDに注目します。DOMの中で`websocket_events` と言うIDを持つHTML要素を編集処理のターゲットとして特定します。Htmxは `<ul id="websocket_events">...</ul>` の内容の末尾に サーバから送信されてきた HTML Fragment `<li>...</li>` を挿入します。
+ブラウザ上で動いているHtmxの実行系はサーバから送信されたHTML Frament を構文解析して `<div hx-swap-oob="beforeend:#websocket_events">` のなかの `hx-swap-oob="beforeend:#websocket_events"` という属性に注目します。一方DOMの中には `websocket_events` と言うIDを持つHTML要素がある。
+
+[source,html]
+----
+            <br />
+            <ul id="websocket_events"></ul>
+        </main>
+----
+
+この `<ul id="websocket_events"></ul>` をターゲットとして特定します。Htmxは `<ul id="websocket_events"></ul>` の内容の末尾に サーバから送信されてきた HTML Fragment の内容 `<li>...</li>` を挿入します。
 
 これを見ればわかるように、Htmx WebSocket拡張を使った実装の場合、サーバーの `message(ws, data) { ... }` イベントハンドラが ターゲットとしてのHTMLのコードとやや密に結合しています。HTMLのマークアップが変更されたら同時にWebSocketサーバも変更しなければならない可能性があります。
 
