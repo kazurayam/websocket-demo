@@ -465,7 +465,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 ## 処理シーケンス
 
-![シーケンス図](./diagrams/out/sequence/sequence.png)
+![シーケンス図](https://kazurayam.github.io/websocket-demo/diagrams/out/sequence/sequence.png)
 
 ## 二つの実装を比べてみよう
 
