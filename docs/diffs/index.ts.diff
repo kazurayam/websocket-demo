@@ -2,12 +2,14 @@
 < // packages/vanilla-javascript/index.ts
 ---
 > // packages/htmx-ws/index.ts
-20,22c20,23
-<             const serverName = "vanilla-javascript/index.ts"
+3c3
+< const serverName = "vanilla-javascript/index.ts"
+---
+> const serverName = "htmx-ws/index.ts"
+21,22c21,23
 <             ws.send(`serverName: ${serverName}`);
 <             ws.send("👋 Welcome baby");
 ---
->             const serverName = "htmx-ws/index.ts"
 >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>serverName: ${serverName}</li>` +
 >                 '<li>👋 Welcome baby</li>' + "</div>");

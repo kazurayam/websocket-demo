@@ -1,5 +1,6 @@
 // packages/vanilla-javascript/broadcast.ts
 console.log("🤗 Hello via Bun! 🐰");
+const serverName = "vanilla-javascript/broadcast.ts"
 const topic = 'the-group-chat';
 const server = Bun.serve({
     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
@@ -18,25 +19,35 @@ const server = Bun.serve({
         return new Response("404!");
     },
     websocket: {
-        message(ws, message) {
-            console.log("✉️ A new Websocket Message is received: " + message);
-            ws.send("✉️ I received a message from you:  " + message);
-            ws.publish(
-                topic,
-                `📢 Message from ${ws.remoteAddress}: ${message}`,
-            );
-        }, // a message is received
         open(ws) {
             console.log("👋 A new Websocket Connection");
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>serverName: ${serverName}</li>` +
+                '<li>👋 Welcome baby</li>' + "</div>");
             ws.subscribe(topic);
-            const serverName = "vanilla-javascript/broadcast.ts"
-            ws.send(`serverName: ${serverName}`);
-            ws.send("👋 Welcome baby");
-            ws.publish(topic, "🥳 A new friend is joining the Party");
+            ws.publish(topic,
+                '<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>🥳 A new friend is joining the Party</li>` +
+                "</div>");
         }, // a socket is opened
+        message(ws, data) {
+            let d = JSON.parse(data.toString())
+            console.log("✉️ A new Websocket Message is received: " + d.message);
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>✉️ Server received a message from you: ${d.message}</li>` +
+                "</div>");
+            ws.publish(
+                topic,
+                '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+                `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
+                "</div>"
+            );
+        }, // a message is received
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");
-            const msg = `A Friend has left the chat`;
+            const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>A Friend has left the chat</li>` +
+                "</div>";
             ws.unsubscribe(topic);
             ws.publish(topic, msg);
         }, // a socket is closed

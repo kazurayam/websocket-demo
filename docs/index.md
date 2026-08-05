@@ -143,6 +143,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
     // packages/vanilla-javascript/index.ts
     console.log("🤗 Hello via Bun! 🐰");
+    const serverName = "vanilla-javascript/index.ts"
     const server = Bun.serve({
         port: 8080,
         fetch(req, server) {
@@ -160,7 +161,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         websocket: {
             open(ws) {
                 console.log("👋 A new Websocket Connection");
-                const serverName = "vanilla-javascript/index.ts"
                 ws.send(`serverName: ${serverName}`);
                 ws.send("👋 Welcome baby");
             },
@@ -243,6 +243,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
     // packages/vanilla-javascript/broadcast.ts
     console.log("🤗 Hello via Bun! 🐰");
+    const serverName = "vanilla-javascript/broadcast.ts"
     const topic = 'the-group-chat';
     const server = Bun.serve({
         port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
@@ -261,25 +262,35 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             return new Response("404!");
         },
         websocket: {
-            message(ws, message) {
-                console.log("✉️ A new Websocket Message is received: " + message);
-                ws.send("✉️ I received a message from you:  " + message);
-                ws.publish(
-                    topic,
-                    `📢 Message from ${ws.remoteAddress}: ${message}`,
-                );
-            }, // a message is received
             open(ws) {
                 console.log("👋 A new Websocket Connection");
+                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>serverName: ${serverName}</li>` +
+                    '<li>👋 Welcome baby</li>' + "</div>");
                 ws.subscribe(topic);
-                const serverName = "vanilla-javascript/broadcast.ts"
-                ws.send(`serverName: ${serverName}`);
-                ws.send("👋 Welcome baby");
-                ws.publish(topic, "🥳 A new friend is joining the Party");
+                ws.publish(topic,
+                    '<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>🥳 A new friend is joining the Party</li>` +
+                    "</div>");
             }, // a socket is opened
+            message(ws, data) {
+                let d = JSON.parse(data.toString())
+                console.log("✉️ A new Websocket Message is received: " + d.message);
+                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>✉️ Server received a message from you: ${d.message}</li>` +
+                    "</div>");
+                ws.publish(
+                    topic,
+                    '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+                    `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
+                    "</div>"
+                );
+            }, // a message is received
             close(ws, code, message) {
                 console.log("⏹️ A Websocket Connection is CLOSED");
-                const msg = `A Friend has left the chat`;
+                const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                    `<li>A Friend has left the chat</li>` +
+                    "</div>";
                 ws.unsubscribe(topic);
                 ws.publish(topic, msg);
             }, // a socket is closed
@@ -350,6 +361,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
     // packages/htmx-ws/index.ts
     console.log("🤗 Hello via Bun! 🐰");
+    const serverName = "htmx-ws/index.ts"
     const server = Bun.serve({
         port: 8080,
         fetch(req, server) {
@@ -367,7 +379,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         websocket: {
             open(ws) {
                 console.log("👋 A new Websocket Connection");
-                const serverName = "htmx-ws/index.ts"
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>serverName: ${serverName}</li>` +
                     '<li>👋 Welcome baby</li>' + "</div>");
@@ -395,6 +406,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
     // packages/htmx-ws/broadcast.ts
     console.log("🤗 Hello via Bun! 🐰");
+    const serverName = "htmx-ws/broadcast.ts"
     const topic = 'the-group-chat';
     const server = Bun.serve({
         port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
@@ -415,7 +427,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         websocket: {
             open(ws) {
                 console.log("👋 A new Websocket Connection");
-                const serverName = "htmx-ws/broadcast.ts"
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>serverName: ${serverName}</li>` +
                     '<li>👋 Welcome baby</li>' + "</div>");
@@ -433,7 +444,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
                     "</div>");
                 ws.publish(
                     topic,
-                    '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+                    '<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
                     "</div>"
                 );
@@ -544,12 +555,14 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     < // packages/vanilla-javascript/index.ts
     ---
     > // packages/htmx-ws/index.ts
-    20,22c20,23
-    <             const serverName = "vanilla-javascript/index.ts"
+    3c3
+    < const serverName = "vanilla-javascript/index.ts"
+    ---
+    > const serverName = "htmx-ws/index.ts"
+    21,22c21,23
     <             ws.send(`serverName: ${serverName}`);
     <             ws.send("👋 Welcome baby");
     ---
-    >             const serverName = "htmx-ws/index.ts"
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>serverName: ${serverName}</li>` +
     >                 '<li>👋 Welcome baby</li>' + "</div>");
@@ -574,51 +587,15 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     < // packages/vanilla-javascript/broadcast.ts
     ---
     > // packages/htmx-ws/broadcast.ts
-    21,28d20
-    <         message(ws, message) {
-    <             console.log("✉️ A new Websocket Message is received: " + message);
-    <             ws.send("✉️ I received a message from you:  " + message);
-    <             ws.publish(
-    <                 topic,
-    <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
-    <             );
-    <         }, // a message is received
-    30a23,26
-    >             const serverName = "htmx-ws/broadcast.ts"
-    >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-    >                 `<li>serverName: ${serverName}</li>` +
-    >                 '<li>👋 Welcome baby</li>' + "</div>");
-    32,35c28,31
-    <             const serverName = "vanilla-javascript/broadcast.ts"
-    <             ws.send(`serverName: ${serverName}`);
-    <             ws.send("👋 Welcome baby");
-    <             ws.publish(topic, "🥳 A new friend is joining the Party");
+    3c3
+    < const serverName = "vanilla-javascript/broadcast.ts"
     ---
-    >             ws.publish(topic,
+    > const serverName = "htmx-ws/broadcast.ts"
+    41c41
+    <                 '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+    ---
     >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
-    >                 `<li>🥳 A new friend is joining the Party</li>` +
-    >                 "</div>");
-    36a33,45
-    >         message(ws, data) {
-    >             let d = JSON.parse(data.toString())
-    >             console.log("✉️ A new Websocket Message is received: " + d.message);
-    >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-    >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
-    >                 "</div>");
-    >             ws.publish(
-    >                 topic,
-    >                 '<div hx-swap-oob="be:qforeend:#websocket_events">' +
-    >                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
-    >                 "</div>"
-    >             );
-    >         }, // a message is received
-    39c48,50
-    <             const msg = `A Friend has left the chat`;
-    ---
-    >             const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
-    >                 `<li>A Friend has left the chat</li>` +
-    >                 "</div>";
-    51c62,64
+    62c62,64
     <     const msg = "Hello from the Server, this is a periodic message!";
     ---
     >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
@@ -709,7 +686,7 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
                 <ul id="websocket_events"></ul>
             </main>
 
-この `<ul id="websocket_events"></ul>` をターゲットとして特定します。Htmxは `<ul id="websocket_events"></ul>` の内容の末尾に サーバから送信されてきた HTML Fragment の内容 `<li>…​</li>` を挿入します。
+この `<ul id="websocket_events"></ul>` をターゲットとして特定することができました。Htmxは `<ul id="websocket_events"></ul>` の内容の末尾に サーバから送信されてきた HTML Fragment の内容 `<li>…​</li>` を挿入します。
 
 これを見ればわかるように、Htmx WebSocket拡張を使った実装の場合、サーバーの `message(ws, data) { …​ }` イベントハンドラが ターゲットとしてのHTMLのコードとやや密に結合しています。HTMLのマークアップが変更されたら同時にWebSocketサーバも変更しなければならない可能性があります。
 
