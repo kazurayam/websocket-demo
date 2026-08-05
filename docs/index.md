@@ -226,7 +226,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
                     value="Submit"
                     id="btn"
                 />
-                <br />
                 <ul id="websocket_events"></ul>
             </main>
             <script>
@@ -243,7 +242,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 #### [vanilla-javascript/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/broadcast.ts)
 
     // packages/vanilla-javascript/broadcast.ts
-    import { getServerName } from './utils';
+    import { getServerName } from './utils'
 
     console.log("🤗 Hello via Bun! 🐰");
     const topic = 'the-group-chat';
@@ -264,35 +263,24 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             return new Response("404!");
         },
         websocket: {
-            open(ws) {
-                console.log("👋 A new Websocket Connection");
-                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>serverName: ${getServerName(import.meta.url)}</li>` +
-                    '<li>👋 Welcome baby</li>' + "</div>");
-                ws.subscribe(topic);
-                ws.publish(topic,
-                    '<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>🥳 A new friend is joining the Party</li>` +
-                    "</div>");
-            }, // a socket is opened
-            message(ws, data) {
-                let d = JSON.parse(data.toString())
-                console.log("✉️ A new Websocket Message is received: " + d.message);
-                ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>✉️ Server received a message from you: ${d.message}</li>` +
-                    "</div>");
+            message(ws, message) {
+                console.log("✉️ A new Websocket Message is received: " + message);
+                ws.send("✉️ I received a message from you:  " + message);
                 ws.publish(
                     topic,
-                    '<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
-                    "</div>"
+                    `📢 Message from ${ws.remoteAddress}: ${message}`,
                 );
             }, // a message is received
+            open(ws) {
+                console.log("👋 A new Websocket Connection");
+                ws.subscribe(topic);
+                ws.send(`serverName: ${getServerName(import.meta.url)}`);
+                ws.send("👋 Welcome baby");
+                ws.publish(topic, "🥳 A new friend is joining the Party");
+            }, // a socket is opened
             close(ws, code, message) {
                 console.log("⏹️ A Websocket Connection is CLOSED");
-                const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>A Friend has left the chat</li>` +
-                    "</div>";
+                const msg = `A Friend has left the chat`;
                 ws.unsubscribe(topic);
                 ws.publish(topic, msg);
             }, // a socket is closed
@@ -353,7 +341,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
                         <input type="submit" value="Submit" />
                     </form>
                 </div>
-                <br />
                 <ul id="websocket_events"></ul>
             </main>
         </body>
@@ -476,6 +463,10 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         console.log(`Message sent to "${topic}": ${msg}`);
     }, 5000); // 5000 ms = 5 seconds
 
+## 処理シーケンス
+
+![シーケンス図](./diagrams/out/sequence/sequence.png)
+
 ## 二つの実装を比べてみよう
 
 ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。ほとんど同じように動作します。
@@ -543,7 +534,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     >                     <input type="submit" value="Submit" />
     >                 </form>
     >             </div>
-    48,55d24
+    47,54d23
     <         <script>
     <             let msg = document.querySelector('input#message');
     <             let btn = document.querySelector('input#btn');
@@ -583,18 +574,60 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 #### Diff of broadcast.ts
 
-    1,2c1,2
+    1c1
     < // packages/vanilla-javascript/broadcast.ts
-    < import { getServerName } from './utils';
     ---
     > // packages/htmx-ws/broadcast.ts
-    > import { getServerName } from './utils'
-    63c63,65
+    23,30d22
+    <         message(ws, message) {
+    <             console.log("✉️ A new Websocket Message is received: " + message);
+    <             ws.send("✉️ I received a message from you:  " + message);
+    <             ws.publish(
+    <                 topic,
+    <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
+    <             );
+    <         }, // a message is received
+    32a25,27
+    >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+    >                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
+    >                 '<li>👋 Welcome baby</li>' + "</div>");
+    34,36c29,32
+    <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
+    <             ws.send("👋 Welcome baby");
+    <             ws.publish(topic, "🥳 A new friend is joining the Party");
+    ---
+    >             ws.publish(topic,
+    >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
+    >                 `<li>🥳 A new friend is joining the Party</li>` +
+    >                 "</div>");
+    37a34,46
+    >         message(ws, data) {
+    >             let d = JSON.parse(data.toString())
+    >             console.log("✉️ A new Websocket Message is received: " + d.message);
+    >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+    >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
+    >                 "</div>");
+    >             ws.publish(
+    >                 topic,
+    >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
+    >                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
+    >                 "</div>"
+    >             );
+    >         }, // a message is received
+    40c49,51
+    <             const msg = `A Friend has left the chat`;
+    ---
+    >             const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
+    >                 `<li>A Friend has left the chat</li>` +
+    >                 "</div>";
+    52c63,65
     <     const msg = "Hello from the Server, this is a periodic message!";
     ---
     >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>Hello from the Server, this is a periodic message!</li>` +
     >                 "</div>";
+    55a69
+    > 
 
 ### クライアントとサーバの間で送受信されるメッセージの内容を比較する
 

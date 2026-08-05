@@ -215,6 +215,10 @@ include::../packages/htmx-ws/index.ts[]
 include::../packages/htmx-ws/broadcast.ts[]
 ----
 
+== 処理シーケンス
+
+image:./diagrams/out/sequence/sequence.png[シーケンス図]
+
 
 == 二つの実装を比べてみよう
 
