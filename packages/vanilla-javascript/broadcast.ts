@@ -1,5 +1,5 @@
 // packages/vanilla-javascript/broadcast.ts
-import { getServerName } from './utils';
+import { getServerName } from './utils'
 
 console.log("🤗 Hello via Bun! 🐰");
 const topic = 'the-group-chat';
@@ -20,35 +20,24 @@ const server = Bun.serve({
         return new Response("404!");
     },
     websocket: {
-        open(ws) {
-            console.log("👋 A new Websocket Connection");
-            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                `<li>serverName: ${getServerName(import.meta.url)}</li>` +
-                '<li>👋 Welcome baby</li>' + "</div>");
-            ws.subscribe(topic);
-            ws.publish(topic,
-                '<div hx-swap-oob="beforeend:#websocket_events">' +
-                `<li>🥳 A new friend is joining the Party</li>` +
-                "</div>");
-        }, // a socket is opened
-        message(ws, data) {
-            let d = JSON.parse(data.toString())
-            console.log("✉️ A new Websocket Message is received: " + d.message);
-            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                `<li>✉️ Server received a message from you: ${d.message}</li>` +
-                "</div>");
+        message(ws, message) {
+            console.log("✉️ A new Websocket Message is received: " + message);
+            ws.send("✉️ I received a message from you:  " + message);
             ws.publish(
                 topic,
-                '<div hx-swap-oob="beforeend:#websocket_events">' +
-                `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
-                "</div>"
+                `📢 Message from ${ws.remoteAddress}: ${message}`,
             );
         }, // a message is received
+        open(ws) {
+            console.log("👋 A new Websocket Connection");
+            ws.subscribe(topic);
+            ws.send(`serverName: ${getServerName(import.meta.url)}`);
+            ws.send("👋 Welcome baby");
+            ws.publish(topic, "🥳 A new friend is joining the Party");
+        }, // a socket is opened
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");
-            const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
-                `<li>A Friend has left the chat</li>` +
-                "</div>";
+            const msg = `A Friend has left the chat`;
             ws.unsubscribe(topic);
             ws.publish(topic, msg);
         }, // a socket is closed
@@ -64,4 +53,3 @@ setInterval(() => {
     server.publish(topic, msg);
     console.log(`Message sent to "${topic}": ${msg}`);
 }, 5000); // 5000 ms = 5 seconds
-
