@@ -1,16 +1,10 @@
-1c1
+1,2c1,2
 < // packages/vanilla-javascript/broadcast.ts
+< import { getServerName } from './utils';
 ---
 > // packages/htmx-ws/broadcast.ts
-3c3
-< const serverName = "vanilla-javascript/broadcast.ts"
----
-> const serverName = "htmx-ws/broadcast.ts"
-41c41
-<                 '<div hx-swap-oob="be:qforeend:#websocket_events">' +
----
->                 '<div hx-swap-oob="beforeend:#websocket_events">' +
-62c62,64
+> import { getServerName } from './utils'
+63c63,65
 <     const msg = "Hello from the Server, this is a periodic message!";
 ---
 >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +

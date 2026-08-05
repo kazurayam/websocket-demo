@@ -1,6 +1,7 @@
 // packages/vanilla-javascript/index.ts
+import { getServerName } from './utils';
+
 console.log("🤗 Hello via Bun! 🐰");
-const serverName = "vanilla-javascript/index.ts"
 const server = Bun.serve({
     port: 8080,
     fetch(req, server) {
@@ -18,7 +19,7 @@ const server = Bun.serve({
     websocket: {
         open(ws) {
             console.log("👋 A new Websocket Connection");
-            ws.send(`serverName: ${serverName}`);
+            ws.send(`serverName: ${getServerName(import.meta.url)}`);
             ws.send("👋 Welcome baby");
         },
         message(ws, message) {

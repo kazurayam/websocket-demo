@@ -9,7 +9,7 @@
 <                 document
 <                 .getElementById("websocket_events")
 <                 .insertAdjacentHTML("beforeend",
-<                     "<li>" + text + ";</li>");
+<                     "<li>" + text + "</li>");
 <             };
 <             window.onload = function () {
 <                 echo_service = new WebSocket("ws://127.0.0.1:8080/chat");

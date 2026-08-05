@@ -142,8 +142,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 #### [vanila-javascript/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts)
 
     // packages/vanilla-javascript/index.ts
+    import { getServerName } from './utils';
+
     console.log("🤗 Hello via Bun! 🐰");
-    const serverName = "vanilla-javascript/index.ts"
     const server = Bun.serve({
         port: 8080,
         fetch(req, server) {
@@ -161,7 +162,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         websocket: {
             open(ws) {
                 console.log("👋 A new Websocket Connection");
-                ws.send(`serverName: ${serverName}`);
+                ws.send(`serverName: ${getServerName(import.meta.url)}`);
                 ws.send("👋 Welcome baby");
             },
             message(ws, message) {
@@ -192,7 +193,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
                     document
                     .getElementById("websocket_events")
                     .insertAdjacentHTML("beforeend",
-                        "<li>" + text + ";</li>");
+                        "<li>" + text + "</li>");
                 };
                 window.onload = function () {
                     echo_service = new WebSocket("ws://127.0.0.1:8080/chat");
@@ -242,8 +243,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 #### [vanilla-javascript/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/broadcast.ts)
 
     // packages/vanilla-javascript/broadcast.ts
+    import { getServerName } from './utils';
+
     console.log("🤗 Hello via Bun! 🐰");
-    const serverName = "vanilla-javascript/broadcast.ts"
     const topic = 'the-group-chat';
     const server = Bun.serve({
         port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
@@ -265,7 +267,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             open(ws) {
                 console.log("👋 A new Websocket Connection");
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>serverName: ${serverName}</li>` +
+                    `<li>serverName: ${getServerName(import.meta.url)}</li>` +
                     '<li>👋 Welcome baby</li>' + "</div>");
                 ws.subscribe(topic);
                 ws.publish(topic,
@@ -281,7 +283,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
                     "</div>");
                 ws.publish(
                     topic,
-                    '<div hx-swap-oob="be:qforeend:#websocket_events">' +
+                    '<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
                     "</div>"
                 );
@@ -360,8 +362,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 ### [htmx-ws/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts)
 
     // packages/htmx-ws/index.ts
+    import { getServerName } from './utils';
+
     console.log("🤗 Hello via Bun! 🐰");
-    const serverName = "htmx-ws/index.ts"
     const server = Bun.serve({
         port: 8080,
         fetch(req, server) {
@@ -380,7 +383,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             open(ws) {
                 console.log("👋 A new Websocket Connection");
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>serverName: ${serverName}</li>` +
+                    `<li>serverName: ${getServerName(import.meta.url)}</li>` +
                     '<li>👋 Welcome baby</li>' + "</div>");
             },
             message(ws, data) {
@@ -405,8 +408,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 ### [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/broadcast.ts)
 
     // packages/htmx-ws/broadcast.ts
+    import { getServerName } from './utils'
+
     console.log("🤗 Hello via Bun! 🐰");
-    const serverName = "htmx-ws/broadcast.ts"
     const topic = 'the-group-chat';
     const server = Bun.serve({
         port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
@@ -428,7 +432,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             open(ws) {
                 console.log("👋 A new Websocket Connection");
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-                    `<li>serverName: ${serverName}</li>` +
+                    `<li>serverName: ${getServerName(import.meta.url)}</li>` +
                     '<li>👋 Welcome baby</li>' + "</div>");
                 ws.subscribe(topic);
                 ws.publish(topic,
@@ -495,7 +499,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     <                 document
     <                 .getElementById("websocket_events")
     <                 .insertAdjacentHTML("beforeend",
-    <                     "<li>" + text + ";</li>");
+    <                     "<li>" + text + "</li>");
     <             };
     <             window.onload = function () {
     <                 echo_service = new WebSocket("ws://127.0.0.1:8080/chat");
@@ -555,18 +559,14 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     < // packages/vanilla-javascript/index.ts
     ---
     > // packages/htmx-ws/index.ts
-    3c3
-    < const serverName = "vanilla-javascript/index.ts"
-    ---
-    > const serverName = "htmx-ws/index.ts"
-    21,22c21,23
-    <             ws.send(`serverName: ${serverName}`);
+    22,23c22,24
+    <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
     <             ws.send("👋 Welcome baby");
     ---
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
-    >                 `<li>serverName: ${serverName}</li>` +
+    >                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
     >                 '<li>👋 Welcome baby</li>' + "</div>");
-    24,27c25,32
+    25,28c26,33
     <         message(ws, message) {
     <             console.log(message)
     <             console.log("✉️ A new Websocket Message is received: " + message);
@@ -583,19 +583,13 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 #### Diff of broadcast.ts
 
-    1c1
+    1,2c1,2
     < // packages/vanilla-javascript/broadcast.ts
+    < import { getServerName } from './utils';
     ---
     > // packages/htmx-ws/broadcast.ts
-    3c3
-    < const serverName = "vanilla-javascript/broadcast.ts"
-    ---
-    > const serverName = "htmx-ws/broadcast.ts"
-    41c41
-    <                 '<div hx-swap-oob="be:qforeend:#websocket_events">' +
-    ---
-    >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
-    62c62,64
+    > import { getServerName } from './utils'
+    63c63,65
     <     const msg = "Hello from the Server, this is a periodic message!";
     ---
     >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
