@@ -464,13 +464,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 ![シーケンス図](https://kazurayam.github.io/websocket-demo/diagrams/out/sequence/sequence.png)
 
-'シーケンス図に注釈を加えます。シーケンス図の細部とプログラムのソースコードにカッコ付き数字 `(1)` を目印として書き込みました。
-
-'**(1)** ターミナルで `$cd $ROOT/htmx-ws; bun ./broadcast.ts` を実行すると `broadcast.ts` は `new Bun.serve()` を呼び出してHTTPサーバを立ち上げる。`new Bun.serve()` の第一引数はサーバがlistenすべきポート番号(ここでは 8080)。第二引数は
-
-'- [Server - Bun](https://bun.com/docs/runtime/http/server)
-'- [Bun.Serve object|API Reference|Bun](https://bun.com/reference/bun/Serve)
-
 ## 二つの実装を比べてみよう
 
 ここまでにWebSocketプロトコルで連携するデモを二通りの方法で実装しました。ほとんど同じように動作します。
@@ -699,7 +692,7 @@ Vanilla JavaScriptによる実装では、サーバはメッセージとして�
 
 Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキストをサーバへ送信します。FORMに入力された「こんにちは」という文字列がJSONの内容の一部として運ばれます。Htmxがどうしてそのような動作をするのか？HTMLの下記のコード片をみよ。
 
-    <!-- packages/htmx-ws/index.html -->
+    <!-- src/htmx-ws/index.html -->
     ...
                         Message: <input type="text" name="message" value="Hello!" />
 
