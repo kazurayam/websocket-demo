@@ -1,7 +1,13 @@
 1c1
-< // packages/vanilla-javascript/broadcast.ts
+< // src/vanilla-javascript/broadcast.ts
 ---
-> // packages/htmx-ws/broadcast.ts
+> // src/htmx-ws/broadcast.ts
+6,7c6,7
+< const server = Bun.serve({
+<     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
+---
+> const server = Bun.serve({ // (1)
+>     port: 8080,
 23,30d22
 <         message(ws, message) {
 <             console.log("✉️ A new Websocket Message is received: " + message);

@@ -4,9 +4,10 @@
 
 = WebSocketプロトコルで連携するクライアントとサーバのデモ --- BunとHTMXによる
 
-- date: 2026-08-03
 - author: kazurayam
 - レポジトリ: {REPOS_URL}
+- publish date: 2026-08-03
+- last update 2026-08-07
 
 == 概要
 
@@ -52,19 +53,19 @@ $ echo $ROOT
 
 === ２つのサブディレクトリを作る
 
-`$ROOT/packages/vanilla-javascript` と `$ROOT/packages/htmx-ws` を作った。
+`$ROOT/src/vanilla-javascript` と `$ROOT/src/htmx-ws` を作った。
 
 [source,shell]
 ----
 $ cd $ROOT
-$ mkdir packages
-$ cd packages
+$ mkdir src
+$ cd src
 $ mkdir vanilla-javascript
 $ mkdir htmx-ws
 $ cd -
 $ tree -L 2
 .
-├── packages
+├── src
 │   ├── htmx-ws
 │   └── vanilla-javascript
 └── README.md
@@ -76,9 +77,7 @@ $ tree -L 2
 
 [source]
 ----
-$ cd $ROOT/packages/vanilla-javascript
-$ bun -init -y
-$ cd $ROOT/packages/htmx-ws
+$ cd $ROOT
 $ bun -init -y
 ----
 
@@ -97,16 +96,16 @@ $ bun -init -y
 
 === Vanilla JavaScriptによる実装を動かしてみる
 
-ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。
+ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/src/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。
 
-- link:https://github.com/kazurayam/websocket-demo/tree/main/packages/vanilla-javascript[packages/vanilla-javascript/]
+- link:https://github.com/kazurayam/websocket-demo/tree/main/src/vanilla-javascript[src/vanilla-javascript/]
 
-何はともあれ動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
+何はともあれ動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT` ディレクトリにcdして `bun ./src/vanilla-javascript/index.ts` を実行する。
 
 [source,shell]
 ```
-$ cd $ROOT/packages/vanilla-javascript
-$ bun ./index.ts
+$ cd $ROOT
+$ bun ./src/vanilla-javascript/index.ts
 🤗 Hello via Bun! 🐰
 🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
 ```
@@ -119,28 +118,27 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 image:https://kazurayam.github.io/websocket-demo/images/002_index.ts_exchanged.png[index.ts exchanged]
 
-`./index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、Firfoxブラウザで「元気ですか」と送信しても、Chromeブラウザには「元気ですか」と表示されません。
+`vanilla-javascript/index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、Firfoxブラウザで「元気ですか」と送信しても、Chromeブラウザには「元気ですか」と表示されません。
 
 image:https://kazurayam.github.io/websocket-demo/images/003_dual_browser_echo_local.png[dual browser echo local]
 
-コマンドラインでCTRL+Cをキー入力して `./index.ts` によって起動したサーバを停止しましょう。そして今度は `bun ./broadcast.ts` を実行しよう。
+コマンドラインでCTRL+Cをキー入力して `./vanilla-javascript/index.ts` によって起動したサーバを停止しましょう。そして今度は `bun ./src/vanilla-javascript/broadcast.ts` を実行しよう。
 
 [source,shell]
 ----
-$ cd $ROOT/packages/vanilla-javascript
-$ bun ./broadcast.ts
-$ bun ./broadcast.ts
+$ cd $ROOT
+$ bun ./src/vanilla-javascript/broadcast.ts
 🤗 Hello via Bun! 🐰
 🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
 Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
 ...
 ----
 
-`./broadcast.ts` はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。それだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。
+`vanilla-javascript/broadcast.ts` はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。それだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。
 
 image:https://kazurayam.github.io/websocket-demo/images/004_broadcast.png[broadcast]
 
-また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからメッセージ `Hello from the Server, this is a periodic message!` が繰り返しブラウザに表示されます。
+また `vanilla-javascript/broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからメッセージ `Hello from the Server, this is a periodic message!` が繰り返しブラウザに表示されます。
 
 image:https://kazurayam.github.io/websocket-demo/images/005_mono_directional_messaging.png[mono directional messaging]
 
@@ -150,74 +148,80 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 では、Vanilla JavaScriptによる実装のコードを紹介します。
 
-==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts[vanila-javascript/index.ts]
+==== link:https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/index.ts[vanila-javascript/index.ts]
 
 [source,typescript]
 ----
-include::../packages/vanilla-javascript/index.ts[]
+include::../src/vanilla-javascript/index.ts[]
 ----
 
-==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html[vanilla-javascript/index.html]
-
-[source,typescript]
-----
-include::../packages/vanilla-javascript/index.html[]
-----
-
-==== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/broadcast.ts[vanilla-javascript/broadcast.ts]
+==== link:https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/index.html[vanilla-javascript/index.html]
 
 [source,typescript]
 ----
-include::../packages/vanilla-javascript/broadcast.ts[]
+include::../src/vanilla-javascript/index.html[]
+----
+
+==== link:https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/broadcast.ts[vanilla-javascript/broadcast.ts]
+
+[source,typescript]
+----
+include::../src/vanilla-javascript/broadcast.ts[]
 ----
 
 == Htmx WebSocket Extensionを使った実装
 
-わたしは `$ROOT/packages/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
+わたしは `$ROOT/src/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
 
-- link:https://github.com/kazurayam/websocket-demo/tree/main/packages/htmx-ws[packages/htmx-ws/]
+- link:https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws[src/htmx-ws/]
 
 
 [source,shell]
 ----
-$ cd $ROOT/packages/htmx-ws
+$ cd $ROOT/src/htmx-ws
 $ tree -L 1
 .
 ├── broadcast.ts
-├── bun.lock
 ├── index.html
-├── index.ts
-├── node_modules
-├── package.json
-└── tsconfig.json
+└── index.ts
 ----
 
-`cd $ROOT/packages/htmx-ws` したうえで `bun ./index.ts` を実行してサーバーを起動しブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./broadcast.ts` を実行すればbroadcastのデモが動きます。どちらもVanilla JavaScriptによる実装と見た目は同じです。
+`cd $ROOT` して `bun ./src/htmx-ws/index.ts` を実行すればサーバーが起動します。ブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./src/htmx-ws/broadcast.ts` を実行すればbroadcastのデモが動きます。画面の見た目はどちらもVanilla JavaScriptによる実装とほとんど同じです。
 
-=== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html[htmx-ws/index.html]
+=== link:https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/index.html[htmx-ws/index.html]
 
 [source,typescript]
 ----
-include::../packages/htmx-ws/index.html[]
+include::../src/htmx-ws/index.html[]
 ----
 
-=== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts[htmx-ws/index.ts]
-
-[source,typescript]
-----
-include::../packages/htmx-ws/index.ts[]
-----
-
-=== link:https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/broadcast.ts[htmx-ws/broadcast.ts]
+=== link:https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/index.ts[htmx-ws/index.ts]
 
 [source,typescript]
 ----
-include::../packages/htmx-ws/broadcast.ts[]
+include::../src/htmx-ws/index.ts[]
 ----
 
-== 処理シーケンス
+=== link:https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/broadcast.ts[htmx-ws/broadcast.ts]
+
+[source,typescript]
+----
+include::../src/htmx-ws/broadcast.ts[]
+----
+
+== Publish/subscribeパターンの処理シーケンス
+
+下記の図は link:https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/broadcast.ts[htmx-ws/broadcast.ts] を実行した場合のシーケンスです。
 
 image:{PAGES_URL}/diagrams/out/sequence/sequence.png[シーケンス図]
+
+'シーケンス図に注釈を加えます。シーケンス図の細部とプログラムのソースコードにカッコ付き数字 `(1)` を目印として書き込みました。
+
+'*(1)* ターミナルで `$cd $ROOT/htmx-ws; bun ./broadcast.ts` を実行すると `broadcast.ts` は `new Bun.serve()` を呼び出してHTTPサーバを立ち上げる。`new Bun.serve()` の第一引数はサーバがlistenすべきポート番号(ここでは 8080)。第二引数は
+
+
+'- link:https://bun.com/docs/runtime/http/server[Server - Bun]
+'- link:https://bun.com/reference/bun/Serve[Bun.Serve object|API Reference|Bun]
 
 
 == 二つの実装を比べてみよう

@@ -3,11 +3,13 @@
 
 # WebSocketプロトコルで連携するクライアントとサーバのデモ --- BunとHTMXによる
 
-- date: 2026-08-03
-
 - author: kazurayam
 
 - レポジトリ: <https://github.com/kazurayam/websocket-demo>
+
+- publish date: 2026-08-03
+
+- last update 2026-08-07
 
 ## 概要
 
@@ -52,17 +54,17 @@ AIによる説明:
 
 ### ２つのサブディレクトリを作る
 
-`$ROOT/packages/vanilla-javascript` と `$ROOT/packages/htmx-ws` を作った。
+`$ROOT/src/vanilla-javascript` と `$ROOT/src/htmx-ws` を作った。
 
     $ cd $ROOT
-    $ mkdir packages
-    $ cd packages
+    $ mkdir src
+    $ cd src
     $ mkdir vanilla-javascript
     $ mkdir htmx-ws
     $ cd -
     $ tree -L 2
     .
-    ├── packages
+    ├── src
     │   ├── htmx-ws
     │   └── vanilla-javascript
     └── README.md
@@ -71,9 +73,7 @@ AIによる説明:
 
 `bun init` コマンドでbunプロジェクトを初期化した。
 
-    $ cd $ROOT/packages/vanilla-javascript
-    $ bun -init -y
-    $ cd $ROOT/packages/htmx-ws
+    $ cd $ROOT
     $ bun -init -y
 
 `bun add` コマンドで追加すべき外部パッケージは無い。 `Bun.serve()` がWebSocket APIを標準提供する。それで十分だ。
@@ -92,14 +92,14 @@ AIによる説明:
 
 ### Vanilla JavaScriptによる実装を動かしてみる
 
-ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/packages/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。
+ROBERTO BUTTI氏の記事を参考にして、わたしは `$ROOT/src/vanilla-javascript` ディレクトリの下に `index.ts` と `index.html` を作った。さらにBroadcastサービスを提供するために `broadcast.ts` も作った。
 
-- [packages/vanilla-javascript/](https://github.com/kazurayam/websocket-demo/tree/main/packages/vanilla-javascript)
+- [src/vanilla-javascript/](https://github.com/kazurayam/websocket-demo/tree/main/src/vanilla-javascript)
 
-何はともあれ動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT/packages/vanilla-javascript` ディレクトリにcdして `bun ./index.ts` を実行する。
+何はともあれ動かしてみよう。サーバーを起動するには、コマンドラインで `$ROOT` ディレクトリにcdして `bun ./src/vanilla-javascript/index.ts` を実行する。
 
-    $ cd $ROOT/packages/vanilla-javascript
-    $ bun ./index.ts
+    $ cd $ROOT
+    $ bun ./src/vanilla-javascript/index.ts
     🤗 Hello via Bun! 🐰
     🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
 
@@ -111,25 +111,24 @@ Messageの入力フィールドに何らかの文字をキー入力した上で 
 
 ![index.ts exchanged](https://kazurayam.github.io/websocket-demo/images/002_index.ts_exchanged.png)
 
-`./index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、Firfoxブラウザで「元気ですか」と送信しても、Chromeブラウザには「元気ですか」と表示されません。
+`vanilla-javascript/index.ts` が提供するのはechoサービスです。broadcastサービスではない。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。しかし、Firfoxブラウザで「元気ですか」と送信しても、Chromeブラウザには「元気ですか」と表示されません。
 
 ![dual browser echo local](https://kazurayam.github.io/websocket-demo/images/003_dual_browser_echo_local.png)
 
-コマンドラインでCTRL+Cをキー入力して `./index.ts` によって起動したサーバを停止しましょう。そして今度は `bun ./broadcast.ts` を実行しよう。
+コマンドラインでCTRL+Cをキー入力して `./vanilla-javascript/index.ts` によって起動したサーバを停止しましょう。そして今度は `bun ./src/vanilla-javascript/broadcast.ts` を実行しよう。
 
-    $ cd $ROOT/packages/vanilla-javascript
-    $ bun ./broadcast.ts
-    $ bun ./broadcast.ts
+    $ cd $ROOT
+    $ bun ./src/vanilla-javascript/broadcast.ts
     🤗 Hello via Bun! 🐰
     🚀 Server (HTTP and WebSocket) is launched http://localhost:8080
     Message sent to "the-group-chat": Hello from the Server, this is a periodic message!
     ...
 
-`./broadcast.ts` はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。それだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。
+`vanilla-javascript/broadcast.ts` はBroadcastサービスを提供します。二つのブラウザを同時に立ち上げてそれぞれにメッセージをSubmitすればそれぞれのブラウザにメッセージが応答される。それだけでなく、片方のブラウザでメッセージを送信すると、もう片方のブラウザにもそのメッセージが表示されます。
 
 ![broadcast](https://kazurayam.github.io/websocket-demo/images/004_broadcast.png)
 
-また `./broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからメッセージ `Hello from the Server, this is a periodic message!` が繰り返しブラウザに表示されます。
+また `vanilla-javascript/broadcast.ts` はサーバーからクライアントへ単方向なメッセージを一定周期で送信します。ブラウザを開いたままにしておくと、サーバーからメッセージ `Hello from the Server, this is a periodic message!` が繰り返しブラウザに表示されます。
 
 ![mono directional messaging](https://kazurayam.github.io/websocket-demo/images/005_mono_directional_messaging.png)
 
@@ -139,17 +138,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 では、Vanilla JavaScriptによる実装のコードを紹介します。
 
-#### [vanila-javascript/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.ts)
+#### [vanila-javascript/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/index.ts)
 
-    // packages/vanilla-javascript/index.ts
-    import { getServerName } from './utils';
+    // src/vanilla-javascript/index.ts
+    import { getServerName } from '../shared/utils';
 
     console.log("🤗 Hello via Bun! 🐰");
     const server = Bun.serve({
         port: 8080,
         fetch(req, server) {
             const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
             if (url.pathname === "/surprise") return new Response("🎁");
             if (url.pathname === "/chat") {
                 if (server.upgrade(req)) {
@@ -180,9 +179,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     });
     console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
 
-#### [vanilla-javascript/index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/index.html)
+#### [vanilla-javascript/index.html](https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/index.html)
 
-    <!-- packages/vanilla-javascript/index.html -->
+    <!-- src/vanilla-javascript/index.html -->
     <!doctype html>
     <html>
         <head>
@@ -239,10 +238,10 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         </body>
     </html>
 
-#### [vanilla-javascript/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/vanilla-javascript/broadcast.ts)
+#### [vanilla-javascript/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/broadcast.ts)
 
-    // packages/vanilla-javascript/broadcast.ts
-    import { getServerName } from './utils'
+    // src/vanilla-javascript/broadcast.ts
+    import { getServerName } from '../shared/utils'
 
     console.log("🤗 Hello via Bun! 🐰");
     const topic = 'the-group-chat';
@@ -250,7 +249,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
         fetch(req, server) {
             const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
             if (url.pathname === "/surprise") return new Response("🎁");
 
             if (url.pathname === "/chat") {
@@ -299,28 +298,24 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 ## Htmx WebSocket Extensionを使った実装
 
-わたしは `$ROOT/packages/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
+わたしは `$ROOT/src/htmx-ws` ディレクトリの下に `index.ts` と `index.html` と `broadcast.ts` を作った。
 
-- [packages/htmx-ws/](https://github.com/kazurayam/websocket-demo/tree/main/packages/htmx-ws)
+- [src/htmx-ws/](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws)
 
 <!-- -->
 
-    $ cd $ROOT/packages/htmx-ws
+    $ cd $ROOT/src/htmx-ws
     $ tree -L 1
     .
     ├── broadcast.ts
-    ├── bun.lock
     ├── index.html
-    ├── index.ts
-    ├── node_modules
-    ├── package.json
-    └── tsconfig.json
+    └── index.ts
 
-`cd $ROOT/packages/htmx-ws` したうえで `bun ./index.ts` を実行してサーバーを起動しブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./broadcast.ts` を実行すればbroadcastのデモが動きます。どちらもVanilla JavaScriptによる実装と見た目は同じです。
+`cd $ROOT` して `bun ./src/htmx-ws/index.ts` を実行すればサーバーが起動します。ブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./src/htmx-ws/broadcast.ts` を実行すればbroadcastのデモが動きます。画面の見た目はどちらもVanilla JavaScriptによる実装とほとんど同じです。
 
-### [htmx-ws/index.html](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.html)
+### [htmx-ws/index.html](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/index.html)
 
-    <!-- packages/htmx-ws/index.html -->
+    <!-- src/htmx-ws/index.html -->
     <!doctype html>
     <html>
         <head>
@@ -346,17 +341,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         </body>
     </html>
 
-### [htmx-ws/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/index.ts)
+### [htmx-ws/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/index.ts)
 
-    // packages/htmx-ws/index.ts
-    import { getServerName } from './utils';
+    // src/htmx-ws/index.ts
+    import { getServerName } from '../shared/utils';
 
     console.log("🤗 Hello via Bun! 🐰");
     const server = Bun.serve({
         port: 8080,
         fetch(req, server) {
             const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
             if (url.pathname === "/surprise") return new Response("🎁");
             if (url.pathname === "/chat") {
                 if (server.upgrade(req)) {
@@ -392,18 +387,18 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     });
     console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
 
-### [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/packages/htmx-ws/broadcast.ts)
+### [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/broadcast.ts)
 
-    // packages/htmx-ws/broadcast.ts
-    import { getServerName } from './utils'
+    // src/htmx-ws/broadcast.ts
+    import { getServerName } from '../shared/utils'
 
     console.log("🤗 Hello via Bun! 🐰");
     const topic = 'the-group-chat';
-    const server = Bun.serve({
-        port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
+    const server = Bun.serve({ // (1)
+        port: 8080,
         fetch(req, server) {
             const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
             if (url.pathname === "/surprise") return new Response("🎁");
 
             if (url.pathname === "/chat") {
@@ -463,9 +458,18 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         console.log(`Message sent to "${topic}": ${msg}`);
     }, 5000); // 5000 ms = 5 seconds
 
-## 処理シーケンス
+## Publish/subscribeパターンの処理シーケンス
+
+下記の図は [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/broadcast.ts) を実行した場合のシーケンスです。
 
 ![シーケンス図](https://kazurayam.github.io/websocket-demo/diagrams/out/sequence/sequence.png)
+
+'シーケンス図に注釈を加えます。シーケンス図の細部とプログラムのソースコードにカッコ付き数字 `(1)` を目印として書き込みました。
+
+'**(1)** ターミナルで `$cd $ROOT/htmx-ws; bun ./broadcast.ts` を実行すると `broadcast.ts` は `new Bun.serve()` を呼び出してHTTPサーバを立ち上げる。`new Bun.serve()` の第一引数はサーバがlistenすべきポート番号(ここでは 8080)。第二引数は
+
+'- [Server - Bun](https://bun.com/docs/runtime/http/server)
+'- [Bun.Serve object|API Reference|Bun](https://bun.com/reference/bun/Serve)
 
 ## 二つの実装を比べてみよう
 
@@ -480,9 +484,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 #### Diff of index.html
 
     1c1
-    < <!-- packages/vanilla-javascript/index.html -->
+    < <!-- src/vanilla-javascript/index.html -->
     ---
-    > <!-- packages/htmx-ws/index.html -->
+    > <!-- src/htmx-ws/index.html -->
     6,34c6,11
     <         <script>
     <             let echo_service;
@@ -547,9 +551,9 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 #### Diff of index.ts
 
     1c1
-    < // packages/vanilla-javascript/index.ts
+    < // src/vanilla-javascript/index.ts
     ---
-    > // packages/htmx-ws/index.ts
+    > // src/htmx-ws/index.ts
     22,23c22,24
     <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
     <             ws.send("👋 Welcome baby");
@@ -575,9 +579,15 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 #### Diff of broadcast.ts
 
     1c1
-    < // packages/vanilla-javascript/broadcast.ts
+    < // src/vanilla-javascript/broadcast.ts
     ---
-    > // packages/htmx-ws/broadcast.ts
+    > // src/htmx-ws/broadcast.ts
+    6,7c6,7
+    < const server = Bun.serve({
+    <     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
+    ---
+    > const server = Bun.serve({ // (1)
+    >     port: 8080,
     23,30d22
     <         message(ws, message) {
     <             console.log("✉️ A new Websocket Message is received: " + message);

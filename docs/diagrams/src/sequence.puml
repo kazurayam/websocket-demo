@@ -17,9 +17,9 @@ control     "メッセージ・ルータ" as router
 boundary    "他のブラウザ"       as others
 
 == 管理者がサーバーを起動する ==
-admin       ->   server     : bun ./broadcast.ts
+admin       ->   server     : (1) bun ./src/htmx-ws/broadcast.ts
 activate server
-server      ->   sWS        : create WebSocket Handler
+server      ->   sWS        : (2) create WebSocket Handler
 
 == テスターがブラウザを開いてChat画面を呼び出す ==
 tester      ->   chrome     : open browser

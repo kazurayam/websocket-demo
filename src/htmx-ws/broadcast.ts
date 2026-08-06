@@ -1,13 +1,13 @@
-// packages/htmx-ws/broadcast.ts
-import { getServerName } from './utils'
+// src/htmx-ws/broadcast.ts
+import { getServerName } from '../shared/utils'
 
 console.log("🤗 Hello via Bun! 🐰");
 const topic = 'the-group-chat';
-const server = Bun.serve({
-    port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
+const server = Bun.serve({ // (1)
+    port: 8080,
     fetch(req, server) {
         const url = new URL(req.url);
-        if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+        if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
         if (url.pathname === "/surprise") return new Response("🎁");
 
         if (url.pathname === "/chat") {

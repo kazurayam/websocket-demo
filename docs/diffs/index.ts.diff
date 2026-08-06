@@ -1,7 +1,7 @@
 1c1
-< // packages/vanilla-javascript/index.ts
+< // src/vanilla-javascript/index.ts
 ---
-> // packages/htmx-ws/index.ts
+> // src/htmx-ws/index.ts
 22,23c22,24
 <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
 <             ws.send("👋 Welcome baby");

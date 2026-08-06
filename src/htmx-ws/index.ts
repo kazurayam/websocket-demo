@@ -1,12 +1,12 @@
-// packages/vanilla-javascript/index.ts
-import { getServerName } from './utils';
+// src/htmx-ws/index.ts
+import { getServerName } from '../shared/utils';
 
 console.log("🤗 Hello via Bun! 🐰");
 const server = Bun.serve({
     port: 8080,
     fetch(req, server) {
         const url = new URL(req.url);
-        if (url.pathname === "/") return new Response(Bun.file("./index.html"));
+        if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
         if (url.pathname === "/surprise") return new Response("🎁");
         if (url.pathname === "/chat") {
             if (server.upgrade(req)) {
@@ -19,13 +19,18 @@ const server = Bun.serve({
     websocket: {
         open(ws) {
             console.log("👋 A new Websocket Connection");
-            ws.send(`serverName: ${getServerName(import.meta.url)}`);
-            ws.send("👋 Welcome baby");
+            ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>serverName: ${getServerName(import.meta.url)}</li>` +
+                '<li>👋 Welcome baby</li>' + "</div>");
         },
-        message(ws, message) {
-            console.log(message)
-            console.log("✉️ A new Websocket Message is received: " + message);
-            ws.send("✉️ Server received a message from you: " + message);
+        message(ws, data) {
+            console.log(data)
+            let d = JSON.parse(data.toString())
+            let response = '<div hx-swap-oob="beforeend:#websocket_events">' +
+                `<li>✉️ Server received a message from you: ${d.message}</li>` +
+                "</div>";
+            console.log(response);
+            ws.send(response);
         },
         close(ws, code, message) {
             console.log("⏹️ A Websocket Connection is CLOSED");

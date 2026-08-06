@@ -1,7 +1,7 @@
 1c1
-< <!-- packages/vanilla-javascript/index.html -->
+< <!-- src/vanilla-javascript/index.html -->
 ---
-> <!-- packages/htmx-ws/index.html -->
+> <!-- src/htmx-ws/index.html -->
 6,34c6,11
 <         <script>
 <             let echo_service;

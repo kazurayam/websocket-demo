@@ -1,0 +1,18 @@
+{
+  "name": "websocket-demo",
+  "private": true,
+  "type": "module",
+  "module": "index.ts",
+  "scripts": {
+    "dev": "bun --hot ./src/vanilla-javascript/index.ts",
+    "testvanillaindex": "bun --hot src/vanilla-javascript/index.ts & bun test ./tests/vanilla-javascript/index*.e2e.ts; kill $(ps aux | grep '[0-9] bun --hot' | awk '{print $2}')"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/bun": "latest",
+    "playwright-chromium": "^1.62.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
