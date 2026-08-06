@@ -1,4 +1,4 @@
-// tests/vanilla-javascript/index.e2e.ts
+// tests/htmx-ws/index.test.ts
 import { describe, test, expect, beforeAll, afterAll, beforeEach, afterEach } from 'bun:test';
 import * as PW from '@playwright/test';
 import { BrowserDriverChromium } from '../shared/BrowserDriverChromium';
@@ -18,7 +18,7 @@ describe(`test the chat page`, async () => {
 
     test("make sure the correct serverName is shown", async () => {
         // Select the serverName
-        const li: PW.Locator = page.getByText('vanilla-javascript/index.ts', {exact: false});
+        const li: PW.Locator = page.getByText('htmx-ws/index.ts', {exact: false});
         // make sure the button is clickable
         await li.waitFor({ state: 'visible', timeout: 5000 });
         await PW.expect(li).toBeVisible();
