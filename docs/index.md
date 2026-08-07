@@ -9,7 +9,7 @@
 
 - publish date: 2026-08-03
 
-- last update 2026-08-07
+- last update 2026-08-08
 
 ## 概要
 
@@ -74,7 +74,7 @@ AIによる説明:
 `bun init` コマンドでbunプロジェクトを初期化した。
 
     $ cd $ROOT
-    $ bun -init -y
+    $ bun init -y
 
 `bun add` コマンドで追加すべき外部パッケージは無い。 `Bun.serve()` がWebSocket APIを標準提供する。それで十分だ。
 
