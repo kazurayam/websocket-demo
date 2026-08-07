@@ -146,16 +146,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     console.log("🤗 Hello via Bun! 🐰");
     const server = Bun.serve({
         port: 8080,
-        fetch(req, server) {
-            const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
-            if (url.pathname === "/surprise") return new Response("🎁");
-            if (url.pathname === "/chat") {
+        routes: {
+            "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+            "/surprise": new Response("🎁"),
+            "/chat": (req, server) => {
                 if (server.upgrade(req)) {
                     return; // do not return a Response
                 }
-                return new Response("Filed upgrading to WebSocket", {status: 400});
+                return new Response("Filed upgrading to WebSocket", { status: 400 });
             }
+        },
+        fetch(req, server) {
             return new Response("404!");
         },
         websocket: {
@@ -247,18 +248,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     const topic = 'the-group-chat';
     const server = Bun.serve({
         port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
-        fetch(req, server) {
-            const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
-            if (url.pathname === "/surprise") return new Response("🎁");
-
-            if (url.pathname === "/chat") {
+        routes: {
+            "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+            "/surprise": new Response("🎁"),
+            "/chat": (req, server) => {
                 if (server.upgrade(req)) {
                     return; // do not return a Response
                 }
-                return new Response("Upgrade failed", { status: 400 });
+                return new Response("Filed upgrading to WebSocket", { status: 400 });
             }
-
+        },
+        fetch(req, server) {
             return new Response("404!");
         },
         websocket: {
@@ -332,8 +332,8 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             <main class="container">
                 <div hx-ext="ws" ws-connect="/chat">
                     <form id="form" ws-send>
-                        Message: <input type="text" name="message" value="Hello!" />
-                        <input type="submit" value="Submit" />
+                        Message: <input type="text" name="message" value="Hello!" id="message"/>
+                        <input type="submit" value="Submit" id="btn"/>
                     </form>
                 </div>
                 <ul id="websocket_events"></ul>
@@ -349,16 +349,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     console.log("🤗 Hello via Bun! 🐰");
     const server = Bun.serve({
         port: 8080,
-        fetch(req, server) {
-            const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
-            if (url.pathname === "/surprise") return new Response("🎁");
-            if (url.pathname === "/chat") {
+        routes: {
+            "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+            "/surprise": new Response("🎁"),
+            "/chat": (req, server) => {
                 if (server.upgrade(req)) {
                     return; // do not return a Response
                 }
-                return new Response("Filed upgrading to WebSocket", {status: 400});
+                return new Response("Filed upgrading to WebSocket", { status: 400 });
             }
+        },
+        fetch(req, server) {
             return new Response("404!");
         },
         websocket: {
@@ -396,18 +397,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     const topic = 'the-group-chat';
     const server = Bun.serve({ // (1)
         port: 8080,
-        fetch(req, server) {
-            const url = new URL(req.url);
-            if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
-            if (url.pathname === "/surprise") return new Response("🎁");
-
-            if (url.pathname === "/chat") {
+        routes: {
+            "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+            "/surprise": new Response("🎁"),
+            "/chat": (req, server) => {
                 if (server.upgrade(req)) {
                     return; // do not return a Response
                 }
-                return new Response("Upgrade failed", { status: 400 });
+                return new Response("Filed upgrading to WebSocket", { status: 400 });
             }
-
+        },
+        fetch(req, server) {
             return new Response("404!");
         },
         websocket: {
@@ -527,8 +527,8 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     ---
     >             <div hx-ext="ws" ws-connect="/chat">
     >                 <form id="form" ws-send>
-    >                     Message: <input type="text" name="message" value="Hello!" />
-    >                     <input type="submit" value="Submit" />
+    >                     Message: <input type="text" name="message" value="Hello!" id="message"/>
+    >                     <input type="submit" value="Submit" id="btn"/>
     >                 </form>
     >             </div>
     47,54d23
@@ -547,14 +547,14 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     < // src/vanilla-javascript/index.ts
     ---
     > // src/htmx-ws/index.ts
-    22,23c22,24
+    23,24c23,25
     <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
     <             ws.send("👋 Welcome baby");
     ---
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
     >                 '<li>👋 Welcome baby</li>' + "</div>");
-    25,28c26,33
+    26,29c27,34
     <         message(ws, message) {
     <             console.log(message)
     <             console.log("✉️ A new Websocket Message is received: " + message);
@@ -581,7 +581,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     ---
     > const server = Bun.serve({ // (1)
     >     port: 8080,
-    23,30d22
+    22,29d21
     <         message(ws, message) {
     <             console.log("✉️ A new Websocket Message is received: " + message);
     <             ws.send("✉️ I received a message from you:  " + message);
@@ -590,11 +590,11 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
     <             );
     <         }, // a message is received
-    32a25,27
+    31a24,26
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
     >                 '<li>👋 Welcome baby</li>' + "</div>");
-    34,36c29,32
+    33,35c28,31
     <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
     <             ws.send("👋 Welcome baby");
     <             ws.publish(topic, "🥳 A new friend is joining the Party");
@@ -603,7 +603,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>🥳 A new friend is joining the Party</li>` +
     >                 "</div>");
-    37a34,46
+    36a33,45
     >         message(ws, data) {
     >             let d = JSON.parse(data.toString())
     >             console.log("✉️ A new Websocket Message is received: " + d.message);
@@ -617,19 +617,19 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     >                 "</div>"
     >             );
     >         }, // a message is received
-    40c49,51
+    39c48,50
     <             const msg = `A Friend has left the chat`;
     ---
     >             const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>A Friend has left the chat</li>` +
     >                 "</div>";
-    52c63,65
+    51c62,64
     <     const msg = "Hello from the Server, this is a periodic message!";
     ---
     >     const msg = '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>Hello from the Server, this is a periodic message!</li>` +
     >                 "</div>";
-    55a69
+    54a68
     > 
 
 ### クライアントとサーバの間で送受信されるメッセージの内容を比較する

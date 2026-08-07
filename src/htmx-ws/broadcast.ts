@@ -5,18 +5,17 @@ console.log("🤗 Hello via Bun! 🐰");
 const topic = 'the-group-chat';
 const server = Bun.serve({ // (1)
     port: 8080,
-    fetch(req, server) {
-        const url = new URL(req.url);
-        if (url.pathname === "/") return new Response(Bun.file(new URL(import.meta.url + "/../index.html")));
-        if (url.pathname === "/surprise") return new Response("🎁");
-
-        if (url.pathname === "/chat") {
+    routes: {
+        "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+        "/surprise": new Response("🎁"),
+        "/chat": (req, server) => {
             if (server.upgrade(req)) {
                 return; // do not return a Response
             }
-            return new Response("Upgrade failed", { status: 400 });
+            return new Response("Filed upgrading to WebSocket", { status: 400 });
         }
-
+    },
+    fetch(req, server) {
         return new Response("404!");
     },
     websocket: {

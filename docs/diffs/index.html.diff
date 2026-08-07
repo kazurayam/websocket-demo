@@ -49,8 +49,8 @@
 ---
 >             <div hx-ext="ws" ws-connect="/chat">
 >                 <form id="form" ws-send>
->                     Message: <input type="text" name="message" value="Hello!" />
->                     <input type="submit" value="Submit" />
+>                     Message: <input type="text" name="message" value="Hello!" id="message"/>
+>                     <input type="submit" value="Submit" id="btn"/>
 >                 </form>
 >             </div>
 47,54d23
