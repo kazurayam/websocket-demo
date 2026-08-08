@@ -774,7 +774,7 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
 この中に `"message":"こんにちは"` というkey-value pairが含まれていることに注意。htmxのWebSocket拡張はJSONの中にこのデータを含めるべきだということをどうやって知ったのだろうか？--- それはHTMLの `<input>` 要素に `name` 属性が指定されているからだ。
 
                     <form id="form" ws-send>
-                        Message: ... name="message" .../>
+                        Message: <input ... name="message" .../>
 
 > もしも `<input>` 要素に `name` 属性を付けるのを忘れたらどうなるだろうか？ ---- クライアントからサーバへ送信されるJSONがこうなるだろう。
 >

@@ -47,7 +47,7 @@ ____
 [source,html]
 ----
                 <form id="form" ws-send>
-                    Message: ... name="message" .../>
+                    Message: <input ... name="message" .../>
 ----
 
 [quote,text]
