@@ -760,7 +760,7 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
 
 > ここで `<form>` 要素にもしも `ws-send` 属性を書き忘れるとどうなるだろうか？
 >
-> もしも `<form>` に `action="/some/path"` のようにURLが書いてあればそのパスに対してHTTP POST要求を投げるだろう。しかし `htmx-ws/index.html` の\`&lt;form&gt;\` にはaction属性が書いていない。だからデフォルトとして `action="/"` が仮定される。今回実装したサーバは パス `/` に対してはチャット画面の初期状態を応答するだろう。つまり\`&lt;form&gt;\` 要素に `ws-send` 属性を書き忘れると、Submitボタンを押すたびにチャット画面の初期状態が応答されるだろう。
+> もしも `<form>` に `action="/some/path"` のようにURLが書いてあればそのパスに対してHTTP POST要求を投げるだろう。しかし `htmx-ws/index.html` の `<form>` にはaction属性が書いていない。だからデフォルトとして `action="/"` が仮定される。今回実装したサーバは パス `/` に対してはチャット画面の初期状態を応答するだろう。つまり `<form>` 要素に `ws-send` 属性を書き忘れると、Submitボタンを押すたびにチャット画面の初期状態が応答されるだろう。
 >
 > これではチャットにならない。だから `<form>` 要素に `ws-send` 属性を書き忘れないように注意しよう。
 >
@@ -780,7 +780,7 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
 >
 > {"HEADERS": {"HX-Request": "true","HX-Trigger": "form","HX-Trigger-Name": null,"HX-Target": "form","HX-Current-URL": "http://localhost:8080/"}}
 >
-> つまり `<input>` 要素にキー入力されたはずの文字列が含まれていない、HEADERだけのJSONになる。サーバー側から見るとクライアントからキー入力された文字列が届かなかったと気づくが、どこで脱落したか分かりにくい。デバッグに難儀するだろう。
+> つまり `<input>` 要素にキー入力されたはずの文字列が含まれていない、HEADERだけのJSONになる。サーバー側から見ると人がブラウザ上でキー入力した文字列が届かなかったと気づくだろう。どこで脱落したかはちょっと分かりにくい。デバッグに難儀するだろう。
 >
 > — 
 > text
