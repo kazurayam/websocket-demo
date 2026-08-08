@@ -30,17 +30,17 @@ const server = Bun.serve({
                 `<li>🥳 A new friend is joining the Party</li>` +
                 "</div>");
         }, // a socket is opened
-        message(ws, data) {
-            let d = JSON.parse(data.toString())
+        message(ws, data) { // (15)
+            let d = JSON.parse(data.toString()) // (15)
             console.log("✉️ A new Websocket Message is received: " + d.message);
             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
-                "</div>");
+                "</div>"); // (16)
             ws.publish(
                 topic,
                 '<div hx-swap-oob="beforeend:#websocket_events">' +
                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
-                "</div>"
+                "</div>" // (17)
             );
         }, // a message is received
         close(ws, code, message) {

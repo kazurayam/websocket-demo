@@ -32,18 +32,18 @@
 >                 `<li>🥳 A new friend is joining the Party</li>` +
 >                 "</div>");
 >         }, // a socket is opened
->         message(ws, data) {
->             let d = JSON.parse(data.toString())
+>         message(ws, data) { // (15)
+>             let d = JSON.parse(data.toString()) // (15)
 >             console.log("✉️ A new Websocket Message is received: " + d.message);
 >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
->                 "</div>");
+>                 "</div>"); // (16)
 27c41,43
 <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
 ---
 >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
->                 "</div>"
+>                 "</div>" // (17)
 30,36d45
 <         open(ws) {
 <             console.log("👋 A new Websocket Connection");

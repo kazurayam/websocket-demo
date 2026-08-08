@@ -40,7 +40,7 @@ cWS         <-   sWS        : (7) ws.send("Welcome baby")
 sWS         ->   router     : (8) ws.subscribe(topic)
 activate router
 sWS         ->   router     : (9) ws.publish(topic,"A new friend...")
-cWS         <-   router     : (9) <div hx-swap-oob="beforeend:#websocket_events"><li>A new friend...
+cWS         <-   router     : (10) <div hx-swap-oob="beforeend:#websocket_events"><li>A new friend...
 router      ->   others     : (10) 他のsubscribersにも\nメッセージを配達
 deactivate router
 chrome      <-   cWS        : (11) DOMを書き換える
@@ -49,31 +49,26 @@ tester      <-   chrome     : (11) 画面を更新して表示
 == テスターが "Hello!" と入力してSubmitする ==
 tester      ->   chrome     : (12) Hello! と入力してSubmit
 chrome      ->   cWS        : (13) <form ws-send>
-cWS         ->   sWS        : send JSON {"message":"Hello!"}
+cWS         ->   sWS        : (14) send JSON {"message":"Hello!"}
 note over sWS: websocket: message(ws,data) { ... }
-cWS         <-   sWS        : ws.send("Message from you: Hello!")
-sWS         ->   router     : ws.publish(topic, message)
+sWS         ->   sWS        : (15) parse JSON
+cWS         <-   sWS        : (16) ws.send("Message from you: Hello!")
+sWS         ->   router     : (17) ws.publish(topic, message)
 activate router
-cWS         <-   router     : <div hx-swap-oob="beforeend:#websocket_events"><li>Hello!</li>
-router      ->   others     : 他のsubscribersにも\nメッセージを配達
+cWS         <-   router     : (18) <div hx-swap-oob="beforeend:#websocket_events"><li>Hello!</li>
+router      ->   others     : (18) 他のsubscribersにも\nメッセージを配達
 deactivate router
-chrome      <-   cWS        : DOMを書き換える
-tester      <-   chrome     : 画面を更新して表示
+chrome      <-   cWS        : (19) DOMを書き換える
+tester      <-   chrome     : (19) 画面を更新して表示
 
 == サーバがメッセージを一方的に送信する ==
-server      ->   server     : クライアントに依存しない任意の契機
-note over sWS: websocket: message(ws,data) { ... }
-server      ->   router     : server.publish("Hello from the Server")
+server      ->   server     : (20)クライアントに依存しない任意の契機
+server      ->   router     : (20) server.publish(topic, "Hello from the Server")
 activate router
-cWS         <-   router     : <div hx-swap-oob="beforeend:#websocket_events"><li>Hello!</li>
-router      ->   others     : 他のsubscribersにも\nメッセージを配達
+cWS         <-   router     : (21) <div hx-swap-oob="beforeend:#websocket_events"><li>Hello!</li>
+router      ->   others     : (21) 他のsubscribersにも\nメッセージを配達
 deactivate router
-chrome      <-   cWS        : DOMを書き換える
-tester      <-   chrome     : 画面を更新して表示
-
-
-'hnote over sws: topic:\nthe-group-chat
-'note left: subscribe the topic 'the-group-chat'
-
+chrome      <-   cWS        : (21) DOMを書き換える
+tester      <-   chrome     : (21) 画面を更新して表示
 
 @enduml

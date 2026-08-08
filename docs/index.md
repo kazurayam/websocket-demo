@@ -424,17 +424,17 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
                     `<li>🥳 A new friend is joining the Party</li>` +
                     "</div>");
             }, // a socket is opened
-            message(ws, data) {
-                let d = JSON.parse(data.toString())
+            message(ws, data) { // (15)
+                let d = JSON.parse(data.toString()) // (15)
                 console.log("✉️ A new Websocket Message is received: " + d.message);
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>✉️ Server received a message from you: ${d.message}</li>` +
-                    "</div>");
+                    "</div>"); // (16)
                 ws.publish(
                     topic,
                     '<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
-                    "</div>"
+                    "</div>" // (17)
                 );
             }, // a message is received
             close(ws, code, message) {
@@ -459,36 +459,6 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         server.publish(topic, msg);
         console.log(`Message sent to "${topic}": ${msg}`);
     }, 5000); // 5000 ms = 5 seconds
-
-## Publish/subscribeパターンの処理シーケンス
-
-下記の図は [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws/broadcast.ts) を実行した場合のシーケンスです。
-
-![シーケンス図](https://kazurayam.github.io/websocket-demo/diagrams/out/sequence/sequence.png)
-
-シーケンス図に注釈を加えます。シーケンス図の細部とプログラムのソースコードにカッコ付き数字 `(1)` を目印として書き込みました。
-
-**(1)** ターミナルで `$cd $ROOT/htmx-ws; bun ./broadcast.ts` を実行すると [`broadcast.ts`](https://github.com/kazurayam/websocket-demo/tree/main/) は `new Bun.serve()` を呼び出してHTTPサーバを立ち上げる。参考情報: [Server - Bun](https://bun.com/docs/runtime/http/server)
-
-**(2)** `new Bun.serve({websocket: {…​}})` を契機としてHTTPサーバの中でサーバーサイドのWebSocketハンドラーが起動される。
-
-**(3)** テスターがブラウザを起動し URL `http://localhost:8080/` を開く
-
-**(4)** HTTPリクエスト `GET /` に対して HTTP Responseが応答される。その中身はファイル `src/htmx-ws/index.html` に格納されたHTMLコードである。
-
-**(5)** サーバーから `src/htmx-ws/index.html` のHTMLがブラウザに応答される。ブラウザがHTMLをロードすると `<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"` と `<script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"` というコードがあることから、htmxがロードされ、htmxのWebSocket拡張がロードされる。さらに `<div hx-ext="ws" ws-connect="/chat">` というコードを見つける。これによりhtmxのWebSocket拡張が URLパス `/chat` に HTTP GET要求を上げる。
-
-**(6)** URLパス `/chat` へのHTTP GET要求を受けたサーバは クライアントとのTCPコネクションをHTTPプロトコルからWebSocketプロトコルへと [upgrade](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Protocol_upgrade_mechanism) する。これよりあと、クライアントとサーバの間の通信はHTTPプロトコルではなくWebSocketプロトコルで行われる。
-
-**(7)** サーバサイドのWebSocketハンドラに対し `open` イベントが発火する。`open` イベントのハンドラがクライアントに対して "Welcome baby" というメッセージを送信する。
-
-**(8)** サーバサイドのWebSocketハンドラが `open` イベントのハンドラの中で `ws.subscribe(topic)` というコードを実行する。これによって一つのクライアントとサーバの間のWebSocket接続の端点が Publish/subscribe のtopic (具体的には"the-group-chat")に連結される。この一行こそ、このサンプルコードのなかで **いちばん意味深な一行** だとkazurayamは思う。
-
-**(9)** サーバサイドのWebSocketハンドラが `open` イベントのハンドラの中で "A new friend is joining the Party" というメッセージを発信しようとして `ws.publish(topic, メッセージ)` を実行する。ただしメッセージはプレーンなテキストではなくHTMLフラグメントである。`<div hx-swap-oob="beforeend:#websocket_events">` の `hx-swap-oob` 属性はHtmxのWebSocket拡張がこのHTMLフラグメントを適切に処理できるようにするための手がかりを与える。
-
-**(10)** `ws.publish(topic, メッセージ)` の実行を契機として、topicにsubscribeしている他のすべてのsubscriberに対して同じメッセージが配信される。
-
-**(11)** クライアントサイドのWebSocketハンドラすなわちHtmxのWebSocket拡張はメッセージを受信するとただちにWebページのDOMを更新する。応答されたHTMLフラグメントの最上位要素が `<div hx-swap-oob="beforeend:#websocket_events">` とコーディングされていることと、DOMの中に `<ul id="websocket_events"></ul>` という箇所があること、この２つが与えられた。だから `<ul>` 要素の内容としての `<li>` のリストの最後尾に、新しいメッセージ `<li>🥳 A new friend is joining the Party</li>` を挿入する。DOMが更新されると同時にテスタは画面の中に新しいメッセージが表示されるのを見るだろう。
 
 ## 二つの実装を比べてみよう
 
@@ -631,18 +601,18 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     >                 `<li>🥳 A new friend is joining the Party</li>` +
     >                 "</div>");
     >         }, // a socket is opened
-    >         message(ws, data) {
-    >             let d = JSON.parse(data.toString())
+    >         message(ws, data) { // (15)
+    >             let d = JSON.parse(data.toString()) // (15)
     >             console.log("✉️ A new Websocket Message is received: " + d.message);
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
-    >                 "</div>");
+    >                 "</div>"); // (16)
     27c41,43
     <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
     ---
     >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
-    >                 "</div>"
+    >                 "</div>" // (17)
     30,36d45
     <         open(ws) {
     <             console.log("👋 A new Websocket Connection");
@@ -715,7 +685,7 @@ Vanilla JavaScriptによる実装では、サーバはメッセージとして�
 <tbody>
 <tr>
 <td style="text-align: left;"><p>ブラウザ → サーバ</p></td>
-<td style="text-align: left;"><p><code>{"message":"こんにちは","HEADERS":{"HX-Request":"true","HX-Trigger":"form","HX-Trigger-Name":null,"HX-Target":"form","HX-Current-URL":"http://localhost:8080/"}}</code></p></td>
+<td style="text-align: left;"><p><code>{"message": "こんにちは","HEADERS": {"HX-Request": "true","HX-Trigger": "form","HX-Trigger-Name": null,"HX-Target": "form","HX-Current-URL": "http://localhost:8080/"}}</code></p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><p>ブラウザ ← サーバ</p></td>
@@ -753,6 +723,81 @@ Htmx WebSocket Extensionを使った実装では、HtmxがJSON形式のテキス
 この `<ul id="websocket_events"></ul>` をターゲットとして特定することができました。Htmxは `<ul id="websocket_events"></ul>` の内容の末尾に サーバから送信されてきた HTML Fragment の内容 `<li>…​</li>` を挿入します。
 
 これを見ればわかるように、Htmx WebSocket拡張を使った実装の場合、サーバーの `message(ws, data) { …​ }` イベントハンドラが ターゲットとしてのHTMLのコードとやや密に結合しています。HTMLのマークアップが変更されたら同時にWebSocketサーバも変更しなければならない可能性があります。
+
+## Publish/subscribeパターンの処理シーケンス
+
+下記の図は [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws/broadcast.ts) を実行した場合のシーケンスです。
+
+![シーケンス図](https://kazurayam.github.io/websocket-demo/diagrams/out/sequence/sequence.png)
+
+シーケンス図に注釈を加えます。シーケンス図の細部とプログラムのソースコードにカッコ付き数字 `(1)` を目印として書き込みました。
+
+**(1)** ターミナルで `$cd $ROOT/htmx-ws; bun ./broadcast.ts` を実行すると [`broadcast.ts`](https://github.com/kazurayam/websocket-demo/tree/main/) は `new Bun.serve()` を呼び出してHTTPサーバを立ち上げる。参考情報: [Server - Bun](https://bun.com/docs/runtime/http/server)
+
+**(2)** `new Bun.serve({websocket: {…​}})` を契機としてHTTPサーバの中でサーバーサイドのWebSocketハンドラーが起動される。
+
+**(3)** テスターがブラウザを起動し URL `http://localhost:8080/` を開く
+
+**(4)** HTTPリクエスト `GET /` に対して HTTP Responseが応答される。その中身はファイル `src/htmx-ws/index.html` に格納されたHTMLコードである。
+
+**(5)** サーバーから `src/htmx-ws/index.html` のHTMLがブラウザに応答される。ブラウザがHTMLをロードすると `<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"` と `<script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"` というコードがあることから、htmxがロードされ、htmxのWebSocket拡張がロードされる。さらに `<div hx-ext="ws" ws-connect="/chat">` というコードを見つける。これによりhtmxのWebSocket拡張が URLパス `/chat` に HTTP GET要求を上げる。
+
+**(6)** URLパス `/chat` へのHTTP GET要求を受けたサーバは クライアントとのTCPコネクションをHTTPプロトコルからWebSocketプロトコルへと [upgrade](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Protocol_upgrade_mechanism) する。これよりあと、クライアントとサーバの間の通信はHTTPプロトコルではなくWebSocketプロトコルで行われる。
+
+**(7)** サーバサイドのWebSocketハンドラに対し `open` イベントが発火する。`open` イベントのハンドラがクライアントに対して "Welcome baby" というメッセージを送信する。
+
+**(8)** サーバサイドのWebSocketハンドラが `open` イベントのハンドラの中で `ws.subscribe(topic)` というコードを実行する。これによって一つのクライアントとサーバの間のWebSocket接続の端点が Publish/subscribe のtopic (具体的には"the-group-chat")に連結される。この一行こそ、このサンプルコードのなかで **いちばん意味深な一行** だとkazurayamは思う。
+
+**(9)** サーバサイドのWebSocketハンドラが `open` イベントのハンドラの中で "A new friend is joining the Party" というメッセージを発信しようとして `ws.publish(topic, メッセージ)` を実行する。ただしメッセージはプレーンなテキストではなくHTMLフラグメントである。`<div hx-swap-oob="beforeend:#websocket_events">` の `hx-swap-oob` 属性はHtmxのWebSocket拡張がこのHTMLフラグメントを適切に処理できるようにするための手がかりを与える。
+
+**(10)** `ws.publish(topic, メッセージ)` の実行を契機として、topicにsubscribeしている他のすべてのsubscriberに対して同じメッセージが配信される。
+
+**(11)** クライアントサイドのWebSocketハンドラすなわちHtmxのWebSocket拡張はメッセージを受信するとただちにWebページのDOMを更新する。応答されたHTMLフラグメントの最上位要素が `<div hx-swap-oob="beforeend:#websocket_events">` とコーディングされていることと、DOMの中に `<ul id="websocket_events"></ul>` という箇所があること、この２つが与えられた。だから `<ul>` 要素の内容としての `<li>` のリストの最後尾に、新しいメッセージ `<li>🥳 A new friend is joining the Party</li>` を挿入する。DOMが更新されると同時にテスタは画面の中に新しいメッセージが表示されるのを見るだろう。
+
+**(12)** テスターがチャット画面のMessage入力フィールドに "Hello!" とキー入力して、Submitボタンを押したとしよう。
+
+**(13)** HTMLに `<form id="form" ws-send>` と書いてある。`ws-send` 属性に注目せよ。これがあるのでデータはWebSocketプロトコルでクライアントサイドのWebSocketハンドラからサーバサイドのWebSocketハンドラへ送信される。
+
+> ここで `<form>` 要素にもしも `ws-send` 属性を書き忘れるとどうなるだろうか？
+>
+> もしも `<form>` に `action="/some/path"` のようにURLが書いてあればそのパスに対してHTTP POST要求を投げるだろう。しかし `htmx-ws/index.html` の\`&lt;form&gt;\` にはaction属性が書いていない。だからデフォルトとして `action="/"` が仮定される。今回実装したサーバは パス `/` に対してはチャット画面の初期状態を応答するだろう。つまり\`&lt;form&gt;\` 要素に `ws-send` 属性を書き忘れると、Submitボタンを押すたびにチャット画面の初期状態が応答されるだろう。
+>
+> これではチャットにならない。だから `<form>` 要素に `ws-send` 属性を書き忘れないように注意しよう。
+>
+> — 
+> text
+
+**(14)** HtmxのWebSocket拡張はJSON形式のテキストを生成してそれをWebSocketプロトコルでサーバに送信する。そのJSONは例えばこんな形をしているだろう。
+
+    {"message": "こんにちは","HEADERS": {"HX-Request": "true","HX-Trigger": "form","HX-Trigger-Name": null,"HX-Target": "form","HX-Current-URL": "http://localhost:8080/"}}
+
+この中に `"message":"こんにちは"` というkey-value pairが含まれていることに注意。htmxのWebSocket拡張はJSONの中にこのデータを含めるべきだということをどうやって知ったのだろうか？--- それはHTMLの `<input>` 要素に `name` 属性が指定されているからだ。
+
+                    <form id="form" ws-send>
+                        Message: ... name="message" .../>
+
+> もしも `<input>` 要素に `name` 属性を付けるのを忘れたらどうなるだろうか？ ---- クライアントからサーバへ送信されるJSONがこうなるだろう。
+>
+> {"HEADERS": {"HX-Request": "true","HX-Trigger": "form","HX-Trigger-Name": null,"HX-Target": "form","HX-Current-URL": "http://localhost:8080/"}}
+>
+> つまり `<input>` 要素にキー入力されたはずの文字列が含まれていない、HEADERだけのJSONになる。サーバー側から見るとクライアントからキー入力された文字列が届かなかったと気づくが、どこで脱落したか分かりにくい。デバッグに難儀するだろう。
+>
+> — 
+> text
+
+**(15)** サーバーサイドのWebSocketハンドラは `message(ws, data) {` イベントを受け取る。受け取ったdataはJSON形式のテキストなので、その内容にアクセスするために `let d = JSON.parse(data.toString())` とやってJSONからJavaScriotオブジェクトへ型変換をする。
+
+**(16)** サーバーサイドのWebSocketハンドラは、(7)でやったのと同様に、HTMLフラグメントを構築してクライアントへ送信する。
+
+**(17)** サーバーサイドのWebSocketハンドラは、(9)でやったのと同様に、HTMLフラグメントを構築して `ws.publish(topic, メッセージ)` を実行する。
+
+**(18)** サーバーサイドのメッセージ・ルータは、(9)やったのと同様に、当該topicにsubscribeしている全てのsubscriberに対してメッセージを配信する。
+
+**(19)** クライアントサイドのWebSocketハンドラはメッセージを受け取ると、(11)でやったのと同様に、DOMを更新する。DOMが更新されれは、ブラウザ上の画面が自動的に更新される。
+
+**(20)** テスターがブラウザでチャット画面を操作してメッセージをSubmitすることを契機とするだけでなく、サーバ・サイドで発生した任意の契機によってメッセージを発生させ、メッセージをすべてのsubscriberに送信するというシナリオもある。例えばリアルタイムの株価を送信してオンライン取引ツールの画面を自動的に更新するとか。その場合、サーバーサイドでメッセージを発生させる処理がメッセージ・ブローカーに対して `server.publish(topic, メッセージ)` をダイレクトにcallすれば足りる。
+
+**(21)** メッセージ・ブローカーに対してpublishされたメッセージがシステムを通って流れていく通路はひとつだけだ。クライアントの操作を契機とするpublishも、サーバ・サイドで発動されたpublishも、同じように処理される。
 
 ## 結び
 
