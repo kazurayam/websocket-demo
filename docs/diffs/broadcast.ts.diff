@@ -2,48 +2,56 @@
 < // src/vanilla-javascript/broadcast.ts
 ---
 > // src/htmx-ws/broadcast.ts
-6,7c6,7
-< const server = Bun.serve({
+7c7
 <     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
 ---
-> const server = Bun.serve({ // (1)
->     port: 8080,
-22,29d21
+>     port: 8080, // (1)
+9c9
+<         "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+---
+>         "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))), // (4)
+11,12c11,12
+<         "/chat": (req, server) => {
+<             if (server.upgrade(req)) {
+---
+>         "/chat": (req, server) => { // (5)
+>             if (server.upgrade(req)) { // (6)
+22,24c22,38
 <         message(ws, message) {
 <             console.log("✉️ A new Websocket Message is received: " + message);
 <             ws.send("✉️ I received a message from you:  " + message);
-<             ws.publish(
-<                 topic,
-<                 `📢 Message from ${ws.remoteAddress}: ${message}`,
-<             );
-<         }, // a message is received
-31a24,26
+---
+>         open(ws) { // (7)
+>             console.log("👋 A new Websocket Connection");
 >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
->                 '<li>👋 Welcome baby</li>' + "</div>");
-33,35c28,31
-<             ws.send(`serverName: ${getServerName(import.meta.url)}`);
-<             ws.send("👋 Welcome baby");
-<             ws.publish(topic, "🥳 A new friend is joining the Party");
----
+>                 '<li>👋 Welcome baby</li>' + "</div>"); // (7)
+>             ws.subscribe(topic); // (8)
 >             ws.publish(topic,
 >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>🥳 A new friend is joining the Party</li>` +
 >                 "</div>");
-36a33,45
+>         }, // a socket is opened
 >         message(ws, data) {
 >             let d = JSON.parse(data.toString())
 >             console.log("✉️ A new Websocket Message is received: " + d.message);
 >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
 >                 "</div>");
->             ws.publish(
->                 topic,
+27c41,43
+<                 `📢 Message from ${ws.remoteAddress}: ${message}`,
+---
 >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
 >                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
 >                 "</div>"
->             );
->         }, // a message is received
+30,36d45
+<         open(ws) {
+<             console.log("👋 A new Websocket Connection");
+<             ws.subscribe(topic);
+<             ws.send(`serverName: ${getServerName(import.meta.url)}`);
+<             ws.send("👋 Welcome baby");
+<             ws.publish(topic, "🥳 A new friend is joining the Party");
+<         }, // a socket is opened
 39c48,50
 <             const msg = `A Friend has left the chat`;
 ---

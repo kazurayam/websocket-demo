@@ -13,7 +13,7 @@
     </head>
     <body>
         <main class="container">
-            <div hx-ext="ws" ws-connect="/chat">
+            <div hx-ext="ws" ws-connect="/chat"> <!-- (5) -->
                 <form id="form" ws-send>
                     Message: <input type="text" name="message" value="Hello!" id="message"/>
                     <input type="submit" value="Submit" id="btn"/>

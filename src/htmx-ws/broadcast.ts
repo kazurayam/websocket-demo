@@ -3,13 +3,13 @@ import { getServerName } from '../shared/utils'
 
 console.log("🤗 Hello via Bun! 🐰");
 const topic = 'the-group-chat';
-const server = Bun.serve({ // (1)
-    port: 8080,
+const server = Bun.serve({
+    port: 8080, // (1)
     routes: {
-        "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+        "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))), // (4)
         "/surprise": new Response("🎁"),
-        "/chat": (req, server) => {
-            if (server.upgrade(req)) {
+        "/chat": (req, server) => { // (5)
+            if (server.upgrade(req)) { // (6)
                 return; // do not return a Response
             }
             return new Response("Filed upgrading to WebSocket", { status: 400 });
@@ -19,12 +19,12 @@ const server = Bun.serve({ // (1)
         return new Response("404!");
     },
     websocket: {
-        open(ws) {
+        open(ws) { // (7)
             console.log("👋 A new Websocket Connection");
             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
-                '<li>👋 Welcome baby</li>' + "</div>");
-            ws.subscribe(topic);
+                '<li>👋 Welcome baby</li>' + "</div>"); // (7)
+            ws.subscribe(topic); // (8)
             ws.publish(topic,
                 '<div hx-swap-oob="beforeend:#websocket_events">' +
                 `<li>🥳 A new friend is joining the Party</li>` +

@@ -5,7 +5,7 @@
 
 - author: kazurayam
 
-- レポジトリ: <https://github.com/kazurayam/websocket-demo>
+- レポジトリ: <https://github.com/kazurayam/websocket-demo/tree/main>
 
 - publish date: 2026-08-03
 
@@ -76,7 +76,9 @@ AIによる説明:
     $ cd $ROOT
     $ bun init -y
 
-`bun add` コマンドで追加すべき外部パッケージは無い。 `Bun.serve()` がWebSocket APIを標準提供する。それで十分だ。
+`bun add` コマンドによって追加すべき外部パッケージは無い。 `Bun.serve()` がWebSocket APIを標準提供する。それで十分だ。
+
+WebSocketを動かすのにHonoもJSXも必要ではない。ただしWebScoketをHonoやJSXと組み合わせて動かすことはもちろん可能だ。ただしそれは応用問題なので今回のレポートでは言及しない。
 
 ## Vanilla JavaScriptによる実装
 
@@ -138,7 +140,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 では、Vanilla JavaScriptによる実装のコードを紹介します。
 
-#### [vanila-javascript/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/index.ts)
+#### [vanila-javascript/index.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/vanilla-javascript/index.ts)
 
     // src/vanilla-javascript/index.ts
     import { getServerName } from '../shared/utils';
@@ -180,7 +182,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     });
     console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
 
-#### [vanilla-javascript/index.html](https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/index.html)
+#### [vanilla-javascript/index.html](https://github.com/kazurayam/websocket-demo/tree/main/src/vanilla-javascript/index.html)
 
     <!-- src/vanilla-javascript/index.html -->
     <!doctype html>
@@ -239,7 +241,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         </body>
     </html>
 
-#### [vanilla-javascript/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/vanilla-javascript/broadcast.ts)
+#### [vanilla-javascript/broadcast.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/vanilla-javascript/broadcast.ts)
 
     // src/vanilla-javascript/broadcast.ts
     import { getServerName } from '../shared/utils'
@@ -313,7 +315,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 `cd $ROOT` して `bun ./src/htmx-ws/index.ts` を実行すればサーバーが起動します。ブラウザで `localhost:8080` を開くとechoのデモが動きます。また `bun ./src/htmx-ws/broadcast.ts` を実行すればbroadcastのデモが動きます。画面の見た目はどちらもVanilla JavaScriptによる実装とほとんど同じです。
 
-### [htmx-ws/index.html](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/index.html)
+### [htmx-ws/index.html](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws/index.html)
 
     <!-- src/htmx-ws/index.html -->
     <!doctype html>
@@ -330,7 +332,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         </head>
         <body>
             <main class="container">
-                <div hx-ext="ws" ws-connect="/chat">
+                <div hx-ext="ws" ws-connect="/chat"> <!-- (5) -->
                     <form id="form" ws-send>
                         Message: <input type="text" name="message" value="Hello!" id="message"/>
                         <input type="submit" value="Submit" id="btn"/>
@@ -341,7 +343,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
         </body>
     </html>
 
-### [htmx-ws/index.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/index.ts)
+### [htmx-ws/index.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws/index.ts)
 
     // src/htmx-ws/index.ts
     import { getServerName } from '../shared/utils';
@@ -388,20 +390,20 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     });
     console.log(`🚀 Server (HTTP and WebSocket) is launched ${server.url.origin}`);
 
-### [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/broadcast.ts)
+### [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws/broadcast.ts)
 
     // src/htmx-ws/broadcast.ts
     import { getServerName } from '../shared/utils'
 
     console.log("🤗 Hello via Bun! 🐰");
     const topic = 'the-group-chat';
-    const server = Bun.serve({ // (1)
-        port: 8080,
+    const server = Bun.serve({
+        port: 8080, // (1)
         routes: {
-            "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+            "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))), // (4)
             "/surprise": new Response("🎁"),
-            "/chat": (req, server) => {
-                if (server.upgrade(req)) {
+            "/chat": (req, server) => { // (5)
+                if (server.upgrade(req)) { // (6)
                     return; // do not return a Response
                 }
                 return new Response("Filed upgrading to WebSocket", { status: 400 });
@@ -411,12 +413,12 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
             return new Response("404!");
         },
         websocket: {
-            open(ws) {
+            open(ws) { // (7)
                 console.log("👋 A new Websocket Connection");
                 ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>serverName: ${getServerName(import.meta.url)}</li>` +
-                    '<li>👋 Welcome baby</li>' + "</div>");
-                ws.subscribe(topic);
+                    '<li>👋 Welcome baby</li>' + "</div>"); // (7)
+                ws.subscribe(topic); // (8)
                 ws.publish(topic,
                     '<div hx-swap-oob="beforeend:#websocket_events">' +
                     `<li>🥳 A new friend is joining the Party</li>` +
@@ -460,9 +462,33 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
 
 ## Publish/subscribeパターンの処理シーケンス
 
-下記の図は [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/blob/main/src/htmx-ws/broadcast.ts) を実行した場合のシーケンスです。
+下記の図は [htmx-ws/broadcast.ts](https://github.com/kazurayam/websocket-demo/tree/main/src/htmx-ws/broadcast.ts) を実行した場合のシーケンスです。
 
 ![シーケンス図](https://kazurayam.github.io/websocket-demo/diagrams/out/sequence/sequence.png)
+
+シーケンス図に注釈を加えます。シーケンス図の細部とプログラムのソースコードにカッコ付き数字 `(1)` を目印として書き込みました。
+
+**(1)** ターミナルで `$cd $ROOT/htmx-ws; bun ./broadcast.ts` を実行すると [`broadcast.ts`](https://github.com/kazurayam/websocket-demo/tree/main/) は `new Bun.serve()` を呼び出してHTTPサーバを立ち上げる。参考情報: [Server - Bun](https://bun.com/docs/runtime/http/server)
+
+**(2)** `new Bun.serve({websocket: {…​}})` を契機としてHTTPサーバの中でサーバーサイドのWebSocketハンドラーが起動される。
+
+**(3)** テスターがブラウザを起動し URL `http://localhost:8080/` を開く
+
+**(4)** HTTPリクエスト `GET /` に対して HTTP Responseが応答される。その中身はファイル `src/htmx-ws/index.html` に格納されたHTMLコードである。
+
+**(5)** サーバーから `src/htmx-ws/index.html` のHTMLがブラウザに応答される。ブラウザがHTMLをロードすると `<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"` と `<script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"` というコードがあることから、htmxがロードされ、htmxのWebSocket拡張がロードされる。さらに `<div hx-ext="ws" ws-connect="/chat">` というコードを見つける。これによりhtmxのWebSocket拡張が URLパス `/chat` に HTTP GET要求を上げる。
+
+**(6)** URLパス `/chat` へのHTTP GET要求を受けたサーバは クライアントとのTCPコネクションをHTTPプロトコルからWebSocketプロトコルへと [upgrade](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Protocol_upgrade_mechanism) する。これよりあと、クライアントとサーバの間の通信はHTTPプロトコルではなくWebSocketプロトコルで行われる。
+
+**(7)** サーバサイドのWebSocketハンドラに対し `open` イベントが発火する。`open` イベントのハンドラがクライアントに対して "Welcome baby" というメッセージを送信する。
+
+**(8)** サーバサイドのWebSocketハンドラが `open` イベントのハンドラの中で `ws.subscribe(topic)` というコードを実行する。これによって一つのクライアントとサーバの間のWebSocket接続の端点が Publish/subscribe のtopic (具体的には"the-group-chat")に連結される。この一行こそ、このサンプルコードのなかで **いちばん意味深な一行** だとkazurayamは思う。
+
+**(9)** サーバサイドのWebSocketハンドラが `open` イベントのハンドラの中で "A new friend is joining the Party" というメッセージを発信しようとして `ws.publish(topic, メッセージ)` を実行する。ただしメッセージはプレーンなテキストではなくHTMLフラグメントである。`<div hx-swap-oob="beforeend:#websocket_events">` の `hx-swap-oob` 属性はHtmxのWebSocket拡張がこのHTMLフラグメントを適切に処理できるようにするための手がかりを与える。
+
+**(10)** `ws.publish(topic, メッセージ)` の実行を契機として、topicにsubscribeしている他のすべてのsubscriberに対して同じメッセージが配信される。
+
+**(11)** クライアントサイドのWebSocketハンドラすなわちHtmxのWebSocket拡張はメッセージを受信するとただちにWebページのDOMを更新する。応答されたHTMLフラグメントの最上位要素が `<div hx-swap-oob="beforeend:#websocket_events">` とコーディングされていることと、DOMの中に `<ul id="websocket_events"></ul>` という箇所があること、この２つが与えられた。だから `<ul>` 要素の内容としての `<li>` のリストの最後尾に、新しいメッセージ `<li>🥳 A new friend is joining the Party</li>` を挿入する。DOMが更新されると同時にテスタは画面の中に新しいメッセージが表示されるのを見るだろう。
 
 ## 二つの実装を比べてみよう
 
@@ -525,7 +551,7 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     <                 id="btn"
     <             />
     ---
-    >             <div hx-ext="ws" ws-connect="/chat">
+    >             <div hx-ext="ws" ws-connect="/chat"> <!-- (5) -->
     >                 <form id="form" ws-send>
     >                     Message: <input type="text" name="message" value="Hello!" id="message"/>
     >                     <input type="submit" value="Submit" id="btn"/>
@@ -575,48 +601,56 @@ HTTPプロトコルの場合クライアントがrequestしサーバがreplyす�
     < // src/vanilla-javascript/broadcast.ts
     ---
     > // src/htmx-ws/broadcast.ts
-    6,7c6,7
-    < const server = Bun.serve({
+    7c7
     <     port: 8080, // defaults to $BUN_PORT, $PORT, $NODE_PORT otherwise 3000
     ---
-    > const server = Bun.serve({ // (1)
-    >     port: 8080,
-    22,29d21
+    >     port: 8080, // (1)
+    9c9
+    <         "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))),
+    ---
+    >         "/": new Response(Bun.file(new URL(import.meta.url + "/../index.html"))), // (4)
+    11,12c11,12
+    <         "/chat": (req, server) => {
+    <             if (server.upgrade(req)) {
+    ---
+    >         "/chat": (req, server) => { // (5)
+    >             if (server.upgrade(req)) { // (6)
+    22,24c22,38
     <         message(ws, message) {
     <             console.log("✉️ A new Websocket Message is received: " + message);
     <             ws.send("✉️ I received a message from you:  " + message);
-    <             ws.publish(
-    <                 topic,
-    <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
-    <             );
-    <         }, // a message is received
-    31a24,26
+    ---
+    >         open(ws) { // (7)
+    >             console.log("👋 A new Websocket Connection");
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>serverName: ${getServerName(import.meta.url)}</li>` +
-    >                 '<li>👋 Welcome baby</li>' + "</div>");
-    33,35c28,31
-    <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
-    <             ws.send("👋 Welcome baby");
-    <             ws.publish(topic, "🥳 A new friend is joining the Party");
-    ---
+    >                 '<li>👋 Welcome baby</li>' + "</div>"); // (7)
+    >             ws.subscribe(topic); // (8)
     >             ws.publish(topic,
     >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>🥳 A new friend is joining the Party</li>` +
     >                 "</div>");
-    36a33,45
+    >         }, // a socket is opened
     >         message(ws, data) {
     >             let d = JSON.parse(data.toString())
     >             console.log("✉️ A new Websocket Message is received: " + d.message);
     >             ws.send('<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>✉️ Server received a message from you: ${d.message}</li>` +
     >                 "</div>");
-    >             ws.publish(
-    >                 topic,
+    27c41,43
+    <                 `📢 Message from ${ws.remoteAddress}: ${message}`,
+    ---
     >                 '<div hx-swap-oob="beforeend:#websocket_events">' +
     >                 `<li>📢 Message from ${ws.remoteAddress}: ${d.message}</li>` +
     >                 "</div>"
-    >             );
-    >         }, // a message is received
+    30,36d45
+    <         open(ws) {
+    <             console.log("👋 A new Websocket Connection");
+    <             ws.subscribe(topic);
+    <             ws.send(`serverName: ${getServerName(import.meta.url)}`);
+    <             ws.send("👋 Welcome baby");
+    <             ws.publish(topic, "🥳 A new friend is joining the Party");
+    <         }, // a socket is opened
     39c48,50
     <             const msg = `A Friend has left the chat`;
     ---

@@ -26,30 +26,29 @@ tester      ->   chrome     : open browser
 activate chrome
 tester      ->   chrome     : localhost:8080
 note over server: fetch(req, server) { ... }
-chrome      ->   server     : HTTP Request GET /
-chrome      <-   server     : HTTP Response チャット画面
+chrome      ->   server     : (3) HTTP Request: GET /
+chrome      <-   server     : (4) HTTP Response: index.htmlのチャット画面
 
 == Htmx WS拡張がサーバー側WebSocketと接続する ==
-chrome      ->   cWS        : HtmxのWS拡張を起動
+chrome      ->   cWS        : (5) HtmxのWS拡張を起動
 activate cWS
-cWS         ->   server     : HTTP Request GET /chat
-server      ->   sWS        : server.upgrade(req)
+cWS         ->   server     : (5) HTTP Request GET /chat
+server      ->   sWS        : (6) server.upgrade(req)
 deactivate server
 note over sWS: websocket: open(ws) { ... }
-cWS         <-   sWS        : ws.send("Welcome baby")
-sWS         ->   router     : ws.subscribe(topic)
+cWS         <-   sWS        : (7) ws.send("Welcome baby")
+sWS         ->   router     : (8) ws.subscribe(topic)
 activate router
-sWS         ->   router     : ws.publish(topic,"A new friend...")
-cWS         <-   router     : <div hx-swap-oob="beforeend:#websocket_events"><li>A new friend...
-router      ->   others     : 他のsubscribersにも\nメッセージを配達
+sWS         ->   router     : (9) ws.publish(topic,"A new friend...")
+cWS         <-   router     : (9) <div hx-swap-oob="beforeend:#websocket_events"><li>A new friend...
+router      ->   others     : (10) 他のsubscribersにも\nメッセージを配達
 deactivate router
-chrome      <-   cWS        : DOMを書き換える
-tester      <-   chrome     : 画面を更新して表示
+chrome      <-   cWS        : (11) DOMを書き換える
+tester      <-   chrome     : (11) 画面を更新して表示
 
 == テスターが "Hello!" と入力してSubmitする ==
-tester      ->   chrome     : Hello! と入力
-tester      ->   chrome     : Submit
-chrome      ->   cWS        : <form ws-send>
+tester      ->   chrome     : (12) Hello! と入力してSubmit
+chrome      ->   cWS        : (13) <form ws-send>
 cWS         ->   sWS        : send JSON {"message":"Hello!"}
 note over sWS: websocket: message(ws,data) { ... }
 cWS         <-   sWS        : ws.send("Message from you: Hello!")
